@@ -69,7 +69,7 @@ module.exports = {
                 .setEmoji('🔒');
 
             await channel.send({ content: `<@${interaction.user.id}> — Support team will be with you shortly.`, embeds: [embed], components: [new ActionRowBuilder().addComponents(closeBtn)] });
-            await interaction.editReply({ content: `✅ Ticket created: ${channel}`);
+            await interaction.editReply({ content: `✅ Ticket created: ${channel}` });
         }
 
         else if (sub === 'close') {

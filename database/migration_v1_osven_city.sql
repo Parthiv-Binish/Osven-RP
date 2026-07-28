@@ -1,41 +1,69 @@
 -- =============================================================================
--- Osven City — Database Migration v1.0
--- Source: Project Terrific → Osven City
+-- Osven City — Full Database Schema (standalone, fresh install)
+-- Run: sudo mysql -u root -p < database/migration_v1_osven_city.sql
 -- =============================================================================
 
--- Step 1: Create the new Osven City database
 CREATE DATABASE IF NOT EXISTS `osvencity`
   DEFAULT CHARACTER SET utf8mb4
   DEFAULT COLLATE utf8mb4_unicode_ci;
 
 USE `osvencity`;
 
--- Step 2: Recreate all tables with proper charset/collation
--- NOTE: Copy all CREATE TABLE statements from ProjectTerrific.sql
--- but replace `projectterrific.` with `osvencity.` and fix:
---   - All tables use utf8mb4 + utf8mb4_unicode_ci
---   - JSON columns use JSON type instead of TEXT
---   - Add FOREIGN KEY constraints where appropriate
---   - Add proper INDEXes
+-- =============================================================================
+-- Core QBCore tables
+-- =============================================================================
 
--- Step 3: Migrate data from projectterrific to osvencity
--- INSERT INTO osvencity.tablename SELECT * FROM projectterrific.tablename;
+CREATE TABLE IF NOT EXISTS `players` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `citizenid` varchar(50) NOT NULL,
+  `cid` int(11) DEFAULT NULL,
+  `license` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `money` text NOT NULL,
+  `charinfo` text DEFAULT NULL,
+  `job` text NOT NULL,
+  `gang` text DEFAULT NULL,
+  `position` text NOT NULL,
+  `metadata` text NOT NULL,
+  `inventory` longtext DEFAULT NULL,
+  `phone_number` varchar(20) DEFAULT NULL,
+  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`citizenid`),
+  KEY `id` (`id`),
+  KEY `last_updated` (`last_updated`),
+  KEY `license` (`license`)
+) ENGINE=InnoDB AUTO_INCREMENT=1;
 
--- Step 4: Drop duplicate tables
-DROP TABLE IF EXISTS `projectterrific`.`bank_accounts`;       -- Use bank_accounts_new
-DROP TABLE IF EXISTS `projectterrific`.`bank_statements`;    -- Legacy
+CREATE TABLE IF NOT EXISTS `bans` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  `license` varchar(50) DEFAULT NULL,
+  `discord` varchar(50) DEFAULT NULL,
+  `ip` varchar(50) DEFAULT NULL,
+  `reason` text DEFAULT NULL,
+  `expire` int(11) DEFAULT NULL,
+  `bannedby` varchar(255) NOT NULL DEFAULT 'LeBanhammer',
+  PRIMARY KEY (`id`),
+  KEY `license` (`license`),
+  KEY `discord` (`discord`),
+  KEY `ip` (`ip`)
+) ENGINE=InnoDB AUTO_INCREMENT=1;
 
--- Step 5: Remove legacy inventory tables (replaced by ox_inventory)
-DROP TABLE IF EXISTS `projectterrific`.`gloveboxitems`;
-DROP TABLE IF EXISTS `projectterrific`.`stashitems`;
-DROP TABLE IF EXISTS `projectterrific`.`trunkitems`;
+CREATE TABLE IF NOT EXISTS `player_contacts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `citizenid` varchar(50) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `number` varchar(50) DEFAULT NULL,
+  `iban` varchar(50) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `citizenid` (`citizenid`)
+) ENGINE=InnoDB AUTO_INCREMENT=1;
 
--- Step 6: Remove legacy phone tables (replaced by NPWD)
--- NPWD uses its own schema — keep phone_* tables only if migrating data
--- DROP TABLE IF EXISTS `projectterrific`.`phone_*`; -- UNCOMMENT AFTER DATA MIGRATION
+-- =============================================================================
+-- Osven City custom tables
+-- =============================================================================
 
--- Step 7: Osven City new tables
-CREATE TABLE IF NOT EXISTS `osvencity`.`osven_armory_log` (
+CREATE TABLE IF NOT EXISTS `osven_armory_log` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `citizenid` VARCHAR(50) NOT NULL,
     `action` VARCHAR(50) NOT NULL,
@@ -45,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `osvencity`.`osven_armory_log` (
     INDEX `idx_action` (`action`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `osvencity`.`osven_admin_logs` (
+CREATE TABLE IF NOT EXISTS `osven_admin_logs` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `admin_citizenid` VARCHAR(50) NOT NULL,
     `action` VARCHAR(100) NOT NULL,
@@ -56,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `osvencity`.`osven_admin_logs` (
     INDEX `idx_action` (`action`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `osvencity`.`bans` (
+CREATE TABLE IF NOT EXISTS `osven_bans` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(100) NOT NULL,
     `license` VARCHAR(100) NOT NULL,
@@ -68,14 +96,47 @@ CREATE TABLE IF NOT EXISTS `osvencity`.`bans` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =============================================================================
--- NPWD Phone Integration
+-- Gang Territory System
 -- =============================================================================
 
--- Add phone_number column to players table if not exists
-ALTER TABLE `players`
-  ADD COLUMN IF NOT EXISTS `phone_number` VARCHAR(20) DEFAULT NULL AFTER `citizenid`;
+CREATE TABLE IF NOT EXISTS `osven_territories` (
+  `territory` VARCHAR(50) PRIMARY KEY,
+  `owner` VARCHAR(50) NOT NULL DEFAULT 'none',
+  `captured_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- NPWD requires `npwd_` prefix tables; create if not present
+-- =============================================================================
+-- Relationship / Marriage System
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS `osven_relationships` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `spouse1` VARCHAR(50) NOT NULL,
+  `spouse2` VARCHAR(50) NOT NULL,
+  `ring_type` VARCHAR(50) NOT NULL,
+  `married_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `divorced` TINYINT(1) DEFAULT 0,
+  `divorced_at` TIMESTAMP NULL DEFAULT NULL,
+  INDEX `idx_spouse1` (`spouse1`),
+  INDEX `idx_spouse2` (`spouse2`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =============================================================================
+-- Server Logs
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS `server_logs` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `type` VARCHAR(50) DEFAULT NULL,
+  `message` TEXT DEFAULT NULL,
+  `metadata` TEXT DEFAULT NULL,
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =============================================================================
+-- NPWD Phone Tables
+-- =============================================================================
+
 CREATE TABLE IF NOT EXISTS `npwd_twitter_profiles` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `profile_name` VARCHAR(90) NOT NULL,
@@ -235,27 +296,85 @@ CREATE TABLE IF NOT EXISTS `npwd_darkchat_messages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =============================================================================
--- Gang Territory System
+-- Additional resource tables
 -- =============================================================================
 
-CREATE TABLE IF NOT EXISTS `osven_territories` (
-  `territory` VARCHAR(50) PRIMARY KEY,
-  `owner` VARCHAR(50) NOT NULL DEFAULT 'none',
-  `captured_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- ox_inventory
+CREATE TABLE IF NOT EXISTS `ox_inventory` (
+  `owner` VARCHAR(60) DEFAULT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `data` LONGTEXT DEFAULT NULL,
+  `lastupdated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `owner_name` (`owner`, `name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- =============================================================================
--- Relationship / Marriage System
--- =============================================================================
-
-CREATE TABLE IF NOT EXISTS `osven_relationships` (
+-- qb-houses
+CREATE TABLE IF NOT EXISTS `player_houses` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `spouse1` VARCHAR(50) NOT NULL,
-  `spouse2` VARCHAR(50) NOT NULL,
-  `ring_type` VARCHAR(50) NOT NULL,
-  `married_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `divorced` TINYINT(1) DEFAULT 0,
-  `divorced_at` TIMESTAMP NULL DEFAULT NULL,
-  INDEX `idx_spouse1` (`spouse1`),
-  INDEX `idx_spouse2` (`spouse2`)
+  `house` VARCHAR(50) NOT NULL,
+  `identifier` VARCHAR(50) DEFAULT NULL,
+  `citizenid` VARCHAR(50) DEFAULT NULL,
+  `keyholders` TEXT DEFAULT NULL,
+  `furniture` LONGTEXT DEFAULT NULL,
+  `decorations` LONGTEXT DEFAULT NULL,
+  `stash` LONGTEXT DEFAULT NULL,
+  `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `house` (`house`),
+  INDEX `citizenid` (`citizenid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- qb-apartments
+CREATE TABLE IF NOT EXISTS `apartments` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `citizenid` VARCHAR(50) NOT NULL,
+  `apartment` VARCHAR(50) NOT NULL,
+  `furnished` TINYINT(1) DEFAULT 0,
+  `furniture` LONGTEXT DEFAULT NULL,
+  `decorations` LONGTEXT DEFAULT NULL,
+  `stash` LONGTEXT DEFAULT NULL,
+  `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `citizenid` (`citizenid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- qb-garages
+CREATE TABLE IF NOT EXISTS `player_vehicles` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `license` VARCHAR(50) DEFAULT NULL,
+  `citizenid` VARCHAR(50) DEFAULT NULL,
+  `vehicle` VARCHAR(50) DEFAULT NULL,
+  `hash` VARCHAR(50) DEFAULT NULL,
+  `mods` LONGTEXT DEFAULT NULL,
+  `plate` VARCHAR(50) NOT NULL,
+  `garage` VARCHAR(50) DEFAULT NULL,
+  `state` INT DEFAULT 0,
+  `fuel` INT DEFAULT 100,
+  `engine` FLOAT DEFAULT 1000,
+  `body` FLOAT DEFAULT 1000,
+  `depotprice` INT NOT NULL DEFAULT 0,
+  `drivingdistance` INT DEFAULT 0,
+  `status` TEXT DEFAULT NULL,
+  `parking` VARCHAR(60) DEFAULT NULL,
+  `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `plate` (`plate`),
+  INDEX `citizenid` (`citizenid`),
+  INDEX `license` (`license`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ps-mdt
+CREATE TABLE IF NOT EXISTS `mdt_reports` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `citizenid` VARCHAR(50) DEFAULT NULL,
+  `title` VARCHAR(255) DEFAULT NULL,
+  `incident` LONGTEXT DEFAULT NULL,
+  `charges` LONGTEXT DEFAULT NULL,
+  `author` VARCHAR(50) DEFAULT NULL,
+  `author_name` VARCHAR(100) DEFAULT NULL,
+  `date` VARCHAR(50) DEFAULT NULL,
+  `jail_time` INT DEFAULT 0,
+  INDEX `citizenid` (`citizenid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- qb-phone (legacy, for data migration only)
+-- CREATE TABLE IF NOT EXISTS `phone_messages` (...)
+-- CREATE TABLE IF NOT EXISTS `phone_calls` (...)
+-- CREATE TABLE IF NOT EXISTS `phone_gallery` (...)

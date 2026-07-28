@@ -44,14 +44,8 @@ module.exports = {
             if (setup.roles.emsRole) {
                 client.config.jobs.emsRoleId = client.config.jobs.emsRoleId || setup.roles.emsRole;
             }
-            if (setup.roles.mechanicRole) {
-                client.config.jobs.mechanicRoleId = client.config.jobs.mechanicRoleId || setup.roles.mechanicRole;
-            }
             if (setup.roles.realEstateRole) {
                 client.config.jobs.realEstateRoleId = client.config.jobs.realEstateRoleId || setup.roles.realEstateRole;
-            }
-            if (setup.roles.newsRole) {
-                client.config.jobs.newsRoleId = client.config.jobs.newsRoleId || setup.roles.newsRole;
             }
             // No generic gang roles — each gang creates its own on approval
             if (setup.categories.departmentsCategory) {
@@ -63,14 +57,8 @@ module.exports = {
             if (setup.channels.emsRole) {
                 client.config.jobs.emsChannelId = client.config.jobs.emsChannelId || setup.channels.emsRole;
             }
-            if (setup.channels.mechanicRole) {
-                client.config.jobs.mechanicChannelId = client.config.jobs.mechanicChannelId || setup.channels.mechanicRole;
-            }
             if (setup.channels.realEstateRole) {
                 client.config.jobs.realEstateChannelId = client.config.jobs.realEstateChannelId || setup.channels.realEstateRole;
-            }
-            if (setup.channels.newsRole) {
-                client.config.jobs.newsChannelId = client.config.jobs.newsChannelId || setup.channels.newsRole;
             }
             if (setup.channels.bansChannel) {
                 client.config.bans.channelId = client.config.bans.channelId || setup.channels.bansChannel;

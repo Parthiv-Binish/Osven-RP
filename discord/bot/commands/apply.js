@@ -12,9 +12,7 @@ module.exports = {
                 .addChoices(
                     { name: 'Police', value: 'police' },
                     { name: 'EMS', value: 'ems' },
-                    { name: 'Mechanic', value: 'mechanic' },
-                    { name: 'Real Estate', value: 'realestate' },
-                    { name: 'News', value: 'news' }
+                    { name: 'Real Estate', value: 'realestate' }
                 )
         )),
 

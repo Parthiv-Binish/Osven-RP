@@ -3,7 +3,7 @@ module.exports = {
     token: process.env.DISCORD_BOT_TOKEN || '',
 
     // Discord guild (server) ID
-    guildId: process.env.DISCORD_GUILD_ID || '',
+    guildId: process.env.DISCORD_GUILD_ID || '1531548914337972274',
 
     // Cfx.re server ID for stats
     serverId: '',
@@ -31,7 +31,7 @@ module.exports = {
         channelId: '',               // Channel where job application embeds appear
         staffRoleIds: [],            // Roles that review job apps
         // Available job types shown to applicants
-        types: ['Police', 'EMS', 'Mechanic', 'Real Estate', 'News'],
+        types: ['Police', 'EMS', 'Real Estate'],
     },
 
     // ======================== BAN LOGGING ========================

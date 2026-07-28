@@ -5,9 +5,7 @@ const ticketManager = require('../services/ticketManager');
 const JOB_ROLE_MAP = {
     police: 'policeRoleId',
     ems: 'emsRoleId',
-    mechanic: 'mechanicRoleId',
     realestate: 'realEstateRoleId',
-    news: 'newsRoleId',
 };
 
 module.exports = {
@@ -132,8 +130,7 @@ async function handleButton(interaction, client) {
         'apply_whitelist_btn': '../modals/whitelistApply',
         'apply_police_btn': '../modals/jobApply',
         'apply_ems_btn': '../modals/jobApply',
-        'apply_mechanic_btn': '../modals/jobApply',
-        'apply_news_btn': '../modals/jobApply',
+        // 'apply_mechanic_btn' and 'apply_news_btn' removed per request
         'apply_realestate_btn': '../modals/jobApply',
         'apply_gang_btn': '../modals/gangApply',
     };
@@ -149,8 +146,7 @@ async function handleButton(interaction, client) {
             const jobMap = {
                 'apply_police_btn': 'Police',
                 'apply_ems_btn': 'EMS',
-                'apply_mechanic_btn': 'Mechanic',
-                'apply_news_btn': 'News',
+                // 'apply_mechanic_btn' and 'apply_news_btn' removed per request
                 'apply_realestate_btn': 'Real Estate',
             };
             const m = require(applyBtns[customId]);

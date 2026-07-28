@@ -130,9 +130,7 @@ async function runSetup(guild, client) {
     const deptChannels = [
         { name: '🚔 police-hq',     roleKey: 'policeRole',   cat: 'departmentsCategory' },
         { name: '🚑 ems-hq',        roleKey: 'emsRole',      cat: 'departmentsCategory' },
-        { name: '🔧 mechanics-hq',  roleKey: 'mechanicRole', cat: 'departmentsCategory' },
         { name: '🏢 realestate-hq', roleKey: 'realEstateRole', cat: 'departmentsCategory' },
-        { name: '📰 news-hq',       roleKey: 'newsRole',     cat: 'departmentsCategory' },
     ];
 
     for (const dc of deptChannels) {
@@ -202,9 +200,7 @@ async function runSetup(guild, client) {
         { name: 'Admin',        configKey: 'adminRole',       color: '#C23B3B', reason: 'Server administrator', hoist: true },
         { name: 'Police',       configKey: 'policeRole',      color: '#2B6EB0', reason: 'Police department', hoist: true },
         { name: 'EMS',          configKey: 'emsRole',         color: '#FFFFFF', reason: 'EMS department', hoist: true },
-        { name: 'Mechanic',     configKey: 'mechanicRole',    color: '#E67E22', reason: 'Mechanic department', hoist: true },
         { name: 'Real Estate',  configKey: 'realEstateRole',  color: '#1ABC9C', reason: 'Real Estate department', hoist: true },
-        { name: 'News',         configKey: 'newsRole',        color: '#F1C40F', reason: 'News department', hoist: true },
         // No generic gang roles — each gang gets its own 3 roles on approval
     ];
 
@@ -248,8 +244,6 @@ async function runSetup(guild, client) {
                     new ButtonBuilder().setCustomId('apply_whitelist_btn').setLabel('🎮 Whitelist').setStyle(ButtonStyle.Success),
                     new ButtonBuilder().setCustomId('apply_police_btn').setLabel('👮 Police').setStyle(ButtonStyle.Primary),
                     new ButtonBuilder().setCustomId('apply_ems_btn').setLabel('🚑 EMS').setStyle(ButtonStyle.Primary),
-                    new ButtonBuilder().setCustomId('apply_mechanic_btn').setLabel('🔧 Mechanic').setStyle(ButtonStyle.Primary),
-                    new ButtonBuilder().setCustomId('apply_news_btn').setLabel('📰 News').setStyle(ButtonStyle.Primary),
                 );
                 const row2 = new ActionRowBuilder().addComponents(
                     new ButtonBuilder().setCustomId('apply_realestate_btn').setLabel('🏢 Real Estate').setStyle(ButtonStyle.Primary),

@@ -162,8 +162,8 @@ async function runSetup(guild, client) {
 
     // ── Roles ──
     const roleMappings = [
-        { name: 'Citizen',  configKey: 'defaultRole',  color: '#8B93A1',  reason: 'Default role on join', hoist: false },
-        { name: 'Approved', configKey: 'approvedRole', color: '#2FB6A6',  reason: 'Whitelist approved role', hoist: true },
+        { name: 'Visitor',  configKey: 'defaultRole',  color: '#8B93A1',  reason: 'Default role on join', hoist: false },
+        { name: 'Citizen',  configKey: 'approvedRole', color: '#2FB6A6',  reason: 'Whitelist approved role', hoist: true },
         { name: 'Staff',    configKey: 'staffRole',    color: '#8B93A1',  reason: 'Support staff', hoist: true },
         { name: 'Mod',      configKey: 'modRole',      color: '#E8A33D',  reason: 'Server moderator', hoist: true },
         { name: 'Admin',    configKey: 'adminRole',    color: '#C23B3B',  reason: 'Server administrator', hoist: true },

@@ -1,6 +1,7 @@
 const { REST, Routes } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const { runSetup } = require('../services/autoSetup');
 
 module.exports = {
     name: 'ready',
@@ -12,6 +13,63 @@ module.exports = {
         if (!guild) {
             console.error('[osven-bot] Guild not found — check guildId');
             return;
+        }
+
+        // ── Auto-setup: create missing channels/roles ──
+        const setup = await runSetup(guild, client);
+
+        // Merge setup IDs into client.config at runtime
+        if (setup) {
+            if (setup.categories.ticketsCategory) {
+                client.config.tickets.categoryId = client.config.tickets.categoryId || setup.categories.ticketsCategory;
+            }
+            if (setup.categories.tempVoiceCategory) {
+                client.config.tempVoice.categoryId = client.config.tempVoice.categoryId || setup.categories.tempVoiceCategory;
+            }
+            if (setup.channels.applicationsChannel) {
+                client.config.applications.channelId = client.config.applications.channelId || setup.channels.applicationsChannel;
+            }
+            if (setup.roles.approvedRole) {
+                client.config.applications.approvedRoleId = client.config.applications.approvedRoleId || setup.roles.approvedRole;
+            }
+            if (setup.channels.jobsChannel) {
+                client.config.jobs.channelId = client.config.jobs.channelId || setup.channels.jobsChannel;
+            }
+            if (setup.channels.bansChannel) {
+                client.config.bans.channelId = client.config.bans.channelId || setup.channels.bansChannel;
+            }
+            if (setup.channels.wallOfShameChannel) {
+                client.config.bans.wallOfShameChannelId = client.config.bans.wallOfShameChannelId || setup.channels.wallOfShameChannel;
+            }
+            if (setup.channels.statsChannel) {
+                client.config.stats.channelId = client.config.stats.channelId || setup.channels.statsChannel;
+            }
+            if (setup.channels.joinToCreateChannel) {
+                client.config.tempVoice.joinToCreateChannelId = client.config.tempVoice.joinToCreateChannelId || setup.channels.joinToCreateChannel;
+            }
+            if (setup.channels.webhookChannel) {
+                client.config.webhook.channelId = client.config.webhook.channelId || setup.channels.webhookChannel;
+            }
+            if (setup.channels.transcriptsChannel) {
+                client.config.tickets.logChannelId = client.config.tickets.logChannelId || setup.channels.transcriptsChannel;
+            }
+
+            // Auto-populate staff role IDs from created roles
+            const staffRoleIds = client.config.tickets.staffRoleIds || [];
+            const jobsStaffRoleIds = client.config.jobs.staffRoleIds || [];
+            const appStaffRoleIds = client.config.applications.staffRoleIds || [];
+            if (setup.roles.staffRole && !staffRoleIds.includes(setup.roles.staffRole)) {
+                staffRoleIds.push(setup.roles.staffRole);
+                client.config.tickets.staffRoleIds = staffRoleIds;
+            }
+            if (setup.roles.staffRole && !jobsStaffRoleIds.includes(setup.roles.staffRole)) {
+                jobsStaffRoleIds.push(setup.roles.staffRole);
+                client.config.jobs.staffRoleIds = jobsStaffRoleIds;
+            }
+            if (setup.roles.staffRole && !appStaffRoleIds.includes(setup.roles.staffRole)) {
+                appStaffRoleIds.push(setup.roles.staffRole);
+                client.config.applications.staffRoleIds = appStaffRoleIds;
+            }
         }
 
         // Register slash commands

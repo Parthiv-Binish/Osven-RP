@@ -161,14 +161,17 @@ async function handleButton(interaction, client) {
         const action = parts[1];
         const appId = parseInt(parts[2]);
 
+        // Defer immediately so interaction doesn't expire during async work
+        await interaction.deferUpdate();
+
         if (action === 'skip') {
-            await interaction.update({ content: '⏭️ Skipped — use `/admin review` for the next one.', embeds: [], components: [] });
+            await interaction.editReply({ content: '⏭️ Skipped — use `/admin review` for the next one.', embeds: [], components: [] });
             return;
         }
 
         const app = appManager.review(appId, interaction.user.id, interaction.user.username, action === 'approve' ? 'approved' : 'rejected', null);
         if (!app) {
-            await interaction.reply({ content: '❌ Application not found.', ephemeral: true });
+            await interaction.editReply({ content: '❌ Application not found.', components: [] });
             return;
         }
 
@@ -182,7 +185,7 @@ async function handleButton(interaction, client) {
             } catch {}
         }
 
-        await interaction.update({
+        await interaction.editReply({
             content: `✅ Application #${appId} **${action === 'approve' ? 'Approved' : 'Rejected'}** by ${interaction.user}`,
             embeds: [],
             components: [],

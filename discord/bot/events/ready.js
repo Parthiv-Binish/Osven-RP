@@ -53,18 +53,9 @@ module.exports = {
             if (setup.roles.newsRole) {
                 client.config.jobs.newsRoleId = client.config.jobs.newsRoleId || setup.roles.newsRole;
             }
-            if (setup.roles.gangLeaderRole) {
-                client.config.gangs.leaderRoleId = client.config.gangs.leaderRoleId || setup.roles.gangLeaderRole;
-            }
-            if (setup.roles.gangCoLeaderRole) {
-                client.config.gangs.coLeaderRoleId = client.config.gangs.coLeaderRoleId || setup.roles.gangCoLeaderRole;
-            }
-            if (setup.roles.gangMemberRole) {
-                client.config.gangs.memberRoleId = client.config.gangs.memberRoleId || setup.roles.gangMemberRole;
-            }
+            // No generic gang roles — each gang creates its own on approval
             if (setup.categories.departmentsCategory) {
                 client.config.jobs.categoryId = client.config.jobs.categoryId || setup.categories.departmentsCategory;
-                client.config.gangs.categoryId = client.config.gangs.categoryId || setup.categories.departmentsCategory;
             }
             if (setup.channels.policeRole) {
                 client.config.jobs.policeChannelId = client.config.jobs.policeChannelId || setup.channels.policeRole;

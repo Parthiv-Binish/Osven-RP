@@ -94,7 +94,7 @@ async function runSetup(guild, client) {
         { name: 'suggestions',    configKey: 'suggestionsChannel',   topic: 'Suggestions for the server',      cat: 'communityCategory' },
         { name: 'police',         configKey: 'policeChannel',        topic: 'Law enforcement discussions',     cat: 'communityCategory' },
         { name: 'ems',            configKey: 'emsChannel',           topic: 'EMS & medical discussions',       cat: 'communityCategory' },
-        { name: 'gangs',          configKey: 'gangsChannel',         topic: 'Gang-related chat',               cat: 'communityCategory' },
+        // gangs are fully separate with own roles + channels — no general gang channel needed
         { name: 'admin-chat',     configKey: 'adminChannel',         topic: 'Staff coordination (admin only)', cat: 'staffCategory' },
         { name: 'mod-logs',       configKey: 'webhookChannel',       topic: 'Join/leave/report logs',          cat: 'staffCategory' },
         { name: 'staff-review',   configKey: 'staffReviewChannel',   topic: 'Review & approve applications',   cat: 'staffCategory' },
@@ -205,9 +205,7 @@ async function runSetup(guild, client) {
         { name: 'Mechanic',     configKey: 'mechanicRole',    color: '#E67E22', reason: 'Mechanic department', hoist: true },
         { name: 'Real Estate',  configKey: 'realEstateRole',  color: '#1ABC9C', reason: 'Real Estate department', hoist: true },
         { name: 'News',         configKey: 'newsRole',        color: '#F1C40F', reason: 'News department', hoist: true },
-        { name: 'Gang Leader',  configKey: 'gangLeaderRole',  color: '#9B59B6', reason: 'Gang leader', hoist: true },
-        { name: 'Gang Co-Leader', configKey: 'gangCoLeaderRole', color: '#8E44AD', reason: 'Gang co-leader', hoist: true },
-        { name: 'Gang Member',  configKey: 'gangMemberRole',  color: '#6C3483', reason: 'Gang member', hoist: true },
+        // No generic gang roles — each gang gets its own 3 roles on approval
     ];
 
     for (const rl of roleMappings) {

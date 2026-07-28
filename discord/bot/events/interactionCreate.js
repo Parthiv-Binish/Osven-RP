@@ -288,7 +288,7 @@ async function handleApproval(interaction, client, app) {
 
     else if (app.type === 'gang') {
         const gangSlug = app.gangName.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const catId = client.config.gangs.categoryId || client.config.jobs.categoryId;
+        const catId = client.config.jobs.categoryId;
 
         // Create gang-specific roles
         let leaderRole, coLeaderRole, memberRole;
@@ -336,13 +336,10 @@ async function handleApproval(interaction, client, app) {
             console.error(`[osven-bot] Failed to create gang channel: ${err.message}`);
         }
 
-        // Assign applicant as Leader + base gang leader role
+        // Assign applicant as Leader
         const applicant = await guild.members.fetch(app.userId).catch(() => null);
         if (applicant) {
-            const rolesToAdd = [client.config.gangs.leaderRoleId, leaderRole?.id].filter(Boolean);
-            for (const rid of rolesToAdd) {
-                await applicant.roles.add(rid).catch(() => {});
-            }
+            if (leaderRole) await applicant.roles.add(leaderRole).catch(() => {});
             try {
                 const user = await client.users.fetch(app.userId);
                 if (user) await user.send(`✅ **${app.gangName} Gang Approved!** You have been set as Leader. Your private HQ channel is ready.`);
@@ -353,10 +350,7 @@ async function handleApproval(interaction, client, app) {
         for (const uid of app.coLeaderIds) {
             const member = await guild.members.fetch(uid).catch(() => null);
             if (!member) continue;
-            const rolesForMember = [client.config.gangs.coLeaderRoleId, coLeaderRole?.id].filter(Boolean);
-            for (const rid of rolesForMember) {
-                await member.roles.add(rid).catch(() => {});
-            }
+            if (coLeaderRole) await member.roles.add(coLeaderRole).catch(() => {});
             if (gangChannel) {
                 await gangChannel.permissionOverwrites.edit(member, { ViewChannel: true, SendMessages: true, ReadMessageHistory: true }).catch(() => {});
             }
@@ -370,10 +364,7 @@ async function handleApproval(interaction, client, app) {
         for (const uid of app.memberIds) {
             const member = await guild.members.fetch(uid).catch(() => null);
             if (!member) continue;
-            const rolesForMember = [client.config.gangs.memberRoleId, memberRole?.id].filter(Boolean);
-            for (const rid of rolesForMember) {
-                await member.roles.add(rid).catch(() => {});
-            }
+            if (memberRole) await member.roles.add(memberRole).catch(() => {});
             if (gangChannel) {
                 await gangChannel.permissionOverwrites.edit(member, { ViewChannel: true, SendMessages: true, ReadMessageHistory: true }).catch(() => {});
             }

@@ -3,8 +3,10 @@ game 'gta5'
 lua54 'yes'
 
 author 'Osven City'
-description 'Osven City — qb-menu/qb-input Compatibility Bridge to ox_lib'
+description 'Osven City — qb-menu/qb-target/qb-input Compatibility Bridge to ox_lib'
 version '2.0.0'
+
+provide 'qb-menu'
 
 client_scripts {
     'bridge/cl_menu.lua',

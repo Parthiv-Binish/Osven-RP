@@ -53,6 +53,9 @@ module.exports = {
             if (setup.channels.transcriptsChannel) {
                 client.config.tickets.logChannelId = client.config.tickets.logChannelId || setup.channels.transcriptsChannel;
             }
+            if (setup.channels.generalChannel) {
+                client.config.welcomeChannelId = client.config.welcomeChannelId || setup.channels.generalChannel;
+            }
 
             // Auto-populate staff role IDs from created roles
             const staffRoleIds = client.config.tickets.staffRoleIds || [];

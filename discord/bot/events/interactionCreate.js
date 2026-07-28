@@ -118,6 +118,13 @@ async function handleModal(interaction, client) {
 async function handleButton(interaction, client) {
     const { customId } = interaction;
 
+    // Whitelist apply button (from persistent message)
+    if (customId === 'apply_whitelist_btn') {
+        const whitelistModal = require('../modals/whitelistApply');
+        await interaction.showModal(whitelistModal());
+        return;
+    }
+
     // Application approve/reject
     if (customId.startsWith('app_')) {
         const parts = customId.split('_');

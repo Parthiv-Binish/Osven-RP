@@ -1,4 +1,4 @@
-const { PermissionFlagsBits, ChannelType } = require('discord.js');
+const { PermissionFlagsBits, ChannelType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -40,53 +40,65 @@ async function runSetup(guild, client) {
     let created = false;
 
     // ── Categories ──
-    const categoryMappings = {
-        '🎫 Tickets': 'ticketsCategory',
-        '🔊 Voice Channels': 'tempVoiceCategory',
-    };
+    const categoryMappings = [
+        { name: '📢 Information',  configKey: 'infoCategory' },
+        { name: '💬 Community',    configKey: 'communityCategory' },
+        { name: '🎫 Tickets',      configKey: 'ticketsCategory' },
+        { name: '👮 Staff',        configKey: 'staffCategory' },
+        { name: '🚫 Bans',         configKey: 'bansCategory' },
+        { name: '🔊 Voice Channels', configKey: 'tempVoiceCategory' },
+    ];
 
-    for (const [catName, configKey] of Object.entries(categoryMappings)) {
-        if (setup.categories[configKey]) {
-            const exists = guild.channels.cache.get(setup.categories[configKey]);
+    for (const cat of categoryMappings) {
+        if (setup.categories[cat.configKey]) {
+            const exists = guild.channels.cache.get(setup.categories[cat.configKey]);
             if (exists) continue;
         }
-        const cat = await guild.channels.create({
-            name: catName,
+        const isPrivate = cat.name.includes('Tickets') || cat.name.includes('Staff') || cat.name.includes('Bans');
+        const overwrites = isPrivate
+            ? [{ id: guild.roles.everyone, deny: [PermissionFlagsBits.ViewChannel] }]
+            : [];
+        const newCat = await guild.channels.create({
+            name: cat.name,
             type: ChannelType.GuildCategory,
-            permissionOverwrites: [
-                { id: guild.roles.everyone, deny: [PermissionFlagsBits.ViewChannel] },
-            ],
+            permissionOverwrites: overwrites,
         });
-        if (catName === '🎫 Tickets') {
-            await cat.permissionOverwrites.edit(guild.roles.everyone, { ViewChannel: false });
-        }
-        setup.categories[configKey] = cat.id;
+        setup.categories[cat.configKey] = newCat.id;
         created = true;
-        console.log(`[osven-bot] Created category: ${catName} (${cat.id})`);
+        console.log(`[osven-bot] Created category: ${cat.name} (${newCat.id})`);
         await delay(500);
     }
 
-    // Make ticket category visible to staff (fetch existing roles)
-    const ticketCatId = setup.categories['ticketsCategory'];
-    if (ticketCatId) {
-        const ticketCat = guild.channels.cache.get(ticketCatId);
-        if (ticketCat) {
-            const staffRoleIds = client.config.tickets?.staffRoleIds || [];
-            for (const rid of staffRoleIds) {
-                try {
-                    await ticketCat.permissionOverwrites.edit(rid, { ViewChannel: true });
-                } catch { }
-            }
+    // Make staff/tickets categories visible to staff roles
+    for (const catKey of ['staffCategory', 'ticketsCategory']) {
+        const catId = setup.categories[catKey];
+        if (!catId) continue;
+        const cat = guild.channels.cache.get(catId);
+        if (!cat) continue;
+        const sids = client.config.tickets?.staffRoleIds || [];
+        for (const rid of [...sids, setup.roles.staffRole].filter(Boolean)) {
+            try { await cat.permissionOverwrites.edit(rid, { ViewChannel: true }); } catch { }
         }
     }
 
     // ── Text Channels ──
     const channelMappings = [
-        { name: 'whitelist-apps', configKey: 'applicationsChannel', topic: 'Whitelist applications for staff review' },
-        { name: 'job-apps', configKey: 'jobsChannel', topic: 'Job applications for staff review' },
-        { name: 'ban-logs', configKey: 'bansChannel', topic: 'Ban notifications' },
-        { name: 'mod-logs', configKey: 'webhookChannel', topic: 'Join/leave/report logs' },
-        { name: 'transcripts', configKey: 'transcriptsChannel', topic: 'Ticket transcripts' },
+        { name: 'announcements',  configKey: 'announcementsChannel', topic: 'Server announcements & updates', cat: 'infoCategory' },
+        { name: 'rules',          configKey: 'rulesChannel',         topic: 'Server rules & guidelines',       cat: 'infoCategory' },
+        { name: 'whitelist-apps', configKey: 'applicationsChannel',  topic: 'Whitelist applications',          cat: 'infoCategory' },
+        { name: 'general',        configKey: 'generalChannel',       topic: 'General discussion',              cat: 'communityCategory' },
+        { name: 'gameplay',       configKey: 'gameplayChannel',      topic: 'In-game discussion & stories',    cat: 'communityCategory' },
+        { name: 'media',          configKey: 'mediaChannel',         topic: 'Screenshots & clips',             cat: 'communityCategory' },
+        { name: 'suggestions',    configKey: 'suggestionsChannel',   topic: 'Suggestions for the server',      cat: 'communityCategory' },
+        { name: 'police',         configKey: 'policeChannel',        topic: 'Law enforcement discussions',     cat: 'communityCategory' },
+        { name: 'ems',            configKey: 'emsChannel',           topic: 'EMS & medical discussions',       cat: 'communityCategory' },
+        { name: 'gangs',          configKey: 'gangsChannel',         topic: 'Gang-related chat',               cat: 'communityCategory' },
+        { name: 'admin-chat',     configKey: 'adminChannel',         topic: 'Staff coordination (admin only)', cat: 'staffCategory' },
+        { name: 'mod-logs',       configKey: 'webhookChannel',       topic: 'Join/leave/report logs',          cat: 'staffCategory' },
+        { name: 'job-apps',       configKey: 'jobsChannel',          topic: 'Job applications for review',     cat: 'staffCategory' },
+        { name: 'ban-logs',       configKey: 'bansChannel',          topic: 'Ban notifications',               cat: 'bansCategory' },
+        { name: 'wall-of-shame',  configKey: 'wallOfShameChannel',   topic: 'Permanent bans (Wall of Shame)',  cat: 'bansCategory' },
+        { name: 'transcripts',    configKey: 'transcriptsChannel',   topic: 'Ticket transcripts',              cat: 'staffCategory' },
     ];
 
     for (const ch of channelMappings) {
@@ -94,14 +106,17 @@ async function runSetup(guild, client) {
             const exists = guild.channels.cache.get(setup.channels[ch.configKey]);
             if (exists) continue;
         }
-        const parentId = ch.name.includes('log') || ch.name === 'transcripts'
-            ? null
-            : setup.categories['ticketsCategory'] || null;
+        const parentId = setup.categories[ch.cat] || null;
+        const isStaff = ch.configKey === 'adminChannel' || ch.configKey === 'staffCategory';
+        const overwrites = isStaff
+            ? [{ id: guild.roles.everyone, deny: [PermissionFlagsBits.ViewChannel] }]
+            : [];
         const newCh = await guild.channels.create({
             name: ch.name,
             type: ChannelType.GuildText,
             topic: ch.topic,
             parent: parentId,
+            permissionOverwrites: overwrites,
         });
         setup.channels[ch.configKey] = newCh.id;
         created = true;
@@ -109,10 +124,24 @@ async function runSetup(guild, client) {
         await delay(500);
     }
 
+    // Make admin-chat visible to staff roles
+    const adminChId = setup.channels['adminChannel'];
+    if (adminChId) {
+        const adminCh = guild.channels.cache.get(adminChId);
+        if (adminCh) {
+            const sids = client.config.tickets?.staffRoleIds || [];
+            for (const rid of [...sids, setup.roles.staffRole, setup.roles.adminRole, setup.roles.modRole].filter(Boolean)) {
+                try { await adminCh.permissionOverwrites.edit(rid, { ViewChannel: true }); } catch { }
+            }
+        }
+    }
+
     // ── Voice Channels ──
     const voiceMappings = [
-        { name: '📊 Stats', configKey: 'statsChannel' },
-        { name: '🔊 Join to Create', configKey: 'joinToCreateChannel' },
+        { name: '🚀 General',          configKey: 'generalVc' },
+        { name: '🔊 Join to Create',   configKey: 'joinToCreateChannel' },
+        { name: '📊 Stats',            configKey: 'statsChannel' },
+        { name: '🔇 AFK',              configKey: 'afkVc' },
     ];
 
     for (const vc of voiceMappings) {
@@ -133,10 +162,14 @@ async function runSetup(guild, client) {
 
     // ── Roles ──
     const roleMappings = [
-        { name: 'Approved', configKey: 'approvedRole', color: '#2FB6A6', reason: 'Whitelist approved role' },
-        { name: 'Admin', configKey: 'adminRole', color: '#C23B3B', reason: 'Server administrator' },
-        { name: 'Mod', configKey: 'modRole', color: '#E8A33D', reason: 'Server moderator' },
-        { name: 'Staff', configKey: 'staffRole', color: '#8B93A1', reason: 'Support staff' },
+        { name: 'Citizen',  configKey: 'defaultRole',  color: '#8B93A1',  reason: 'Default role on join', hoist: false },
+        { name: 'Approved', configKey: 'approvedRole', color: '#2FB6A6',  reason: 'Whitelist approved role', hoist: true },
+        { name: 'Staff',    configKey: 'staffRole',    color: '#8B93A1',  reason: 'Support staff', hoist: true },
+        { name: 'Mod',      configKey: 'modRole',      color: '#E8A33D',  reason: 'Server moderator', hoist: true },
+        { name: 'Admin',    configKey: 'adminRole',    color: '#C23B3B',  reason: 'Server administrator', hoist: true },
+        { name: 'Police',   configKey: 'policeRole',   color: '#2B6EB0',  reason: 'Police department', hoist: true },
+        { name: 'EMS',      configKey: 'emsRole',      color: '#FFFFFF',  reason: 'EMS department', hoist: true },
+        { name: 'Gang',     configKey: 'gangRole',     color: '#9B59B6',  reason: 'Gang member', hoist: true },
     ];
 
     for (const rl of roleMappings) {
@@ -148,6 +181,7 @@ async function runSetup(guild, client) {
             name: rl.name,
             color: rl.color,
             reason: rl.reason,
+            hoist: rl.hoist,
         });
         setup.roles[rl.configKey] = newRole.id;
         created = true;
@@ -155,51 +189,50 @@ async function runSetup(guild, client) {
         await delay(500);
     }
 
-    // ── Wall of Shame channel (inside ban category) ──
-    if (setup.channels['bansChannel']) {
-        const banCatName = '🚫 Bans';
-        let banCatId = setup.categories['bansCategory'];
-        if (banCatId) {
-            const exists = guild.channels.cache.get(banCatId);
-            if (!exists) banCatId = null;
-        }
-        if (!banCatId) {
-            const banCat = await guild.channels.create({
-                name: banCatName,
-                type: ChannelType.GuildCategory,
-                permissionOverwrites: [
-                    { id: guild.roles.everyone, deny: [PermissionFlagsBits.ViewChannel] },
-                ],
-            });
-            setup.categories['bansCategory'] = banCat.id;
-            created = true;
-            console.log(`[osven-bot] Created category: ${banCatName} (${banCat.id})`);
-            await delay(500);
+    // ── Persistent messages ──
 
-            // Move ban-logs channel into this category
-            const banLogCh = guild.channels.cache.get(setup.channels['bansChannel']);
-            if (banLogCh) {
-                await banLogCh.setParent(banCat.id, { lockPermissions: true });
+    // Whitelist apply button in whitelist-apps channel
+    const applyChId = setup.channels['applicationsChannel'];
+    if (applyChId) {
+        const applyCh = guild.channels.cache.get(applyChId);
+        if (applyCh) {
+            const existing = (await applyCh.messages.fetch({ limit: 10 }).catch(() => []))
+                .find(m => m.author.id === client.user.id && m.components.length > 0);
+            if (!existing) {
+                const embed = new EmbedBuilder()
+                    .setColor(0xE8A33D)
+                    .setTitle('📝 Whitelist Application')
+                    .setDescription('Click the button below to apply for whitelist access to Osven City.\n\n**Requirements:**\n• Discord account linked to FiveM\n• Read and accept the rules\n• Be ready to roleplay')
+                    .setFooter({ text: 'Applications are reviewed by staff' });
+                const row = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder().setCustomId('apply_whitelist_btn').setLabel('Apply Now').setStyle(ButtonStyle.Primary).setEmoji('📝'),
+                );
+                await applyCh.send({ embeds: [embed], components: [row] });
+                console.log('[osven-bot] Sent whitelist application prompt');
             }
         }
     }
 
-    // Wall of Shame channel
-    let wallKey = 'wallOfShameChannel';
-    if (!setup.channels[wallKey]) {
-        const parentId = setup.categories['bansCategory'] || null;
-        const wos = await guild.channels.create({
-            name: 'wall-of-shame',
-            type: ChannelType.GuildText,
-            topic: 'Permanent bans (Wall of Shame)',
-            parent: parentId,
-        });
-        setup.channels[wallKey] = wos.id;
-        created = true;
-        console.log(`[osven-bot] Created channel: #wall-of-shame (${wos.id})`);
-        await delay(500);
+    // Rules in rules channel
+    const rulesChId = setup.channels['rulesChannel'];
+    if (rulesChId) {
+        const rulesCh = guild.channels.cache.get(rulesChId);
+        if (rulesCh) {
+            const existing = (await rulesCh.messages.fetch({ limit: 10 }).catch(() => []))
+                .find(m => m.author.id === client.user.id);
+            if (!existing) {
+                const embed = new EmbedBuilder()
+                    .setColor(0x2FB6A6)
+                    .setTitle('📜 Server Rules')
+                    .setDescription('1. **Respect everyone** — No harassment, discrimination, or toxicity\n2. **No cheating** — No mods, exploits, or scripts\n3. **Stay in character** — This is an RP server\n4. **No RDM / VDM** — Random deathmatch & vehicle deathmatch are prohibited\n5. **Follow staff instructions** — Staff decisions are final\n6. **No metagaming** — Don\'t use out-of-character info in roleplay\n7. **No powergaming** — Don\'t force unrealistic scenarios\n8. **Have fun!** — This is a game, enjoy it')
+                    .setFooter({ text: 'Violations may result in warnings, kicks, or bans' });
+                await rulesCh.send({ embeds: [embed] });
+                console.log('[osven-bot] Sent rules message');
+            }
+        }
     }
 
+    // ── Save setup data ──
     if (created) {
         writeSetup(setup);
         console.log('[osven-bot] Setup complete — IDs saved to setup.json');

@@ -11,7 +11,8 @@ local function log(msg, level)
         print(('[osven-whitelist] [%s] %s'):format(level:upper(), msg))
     end
     if exports['osven-logging'] then
-        exports['osven-logging']:sendLog('admin', ('Whitelist %s'):format(level:upper()), msg, level)
+        local color = level == 'error' and 15158332 or level == 'warn' and 16776960 or 3066993
+        exports['osven-logging']:log('admin', ('Whitelist %s'):format(level:upper()), msg, color)
     end
 end
 

@@ -2,10 +2,10 @@ Config = Config or {}
 
 Config.Whitelist = {
     -- Discord bot token (required) — create a bot at https://discord.com/developers/applications
-    BotToken = '',
+    BotToken = os.getenv('DISCORD_BOT_TOKEN') or '',
 
     -- Discord guild (server) ID
-    GuildId = '',
+    GuildId = os.getenv('DISCORD_GUILD_ID') or '',
 
     -- Role ID(s) that are allowed to join (empty = any guild member)
     AllowedRoles = {},

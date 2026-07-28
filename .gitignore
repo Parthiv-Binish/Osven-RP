@@ -1,13 +1,9 @@
 # Node
 node_modules/
-discord/bot/node_modules/
 
-# Config with secrets (placeholder templates are fine, actual values stay local)
+# Config with secrets (dont commit real values)
 server.cfg
 osven.cfg
-discord/bot/config.js
-resources/[osven-city]/osven-whitelist/bridge/sh_config.lua
-resources/[osven-city]/osven-discord-bot/bridge/sh_config.lua
 
 # IDE / OS
 .vscode/

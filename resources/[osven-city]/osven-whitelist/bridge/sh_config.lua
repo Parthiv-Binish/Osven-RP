@@ -27,7 +27,7 @@ Config.Whitelist = {
     },
 
     -- Fail mode: true = let players in if Discord API is unreachable, false = block
-    FailOpen = false,
+    FailOpen = true,
 
     -- Enable debug logging
     Debug = false,

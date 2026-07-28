@@ -1,0 +1,16 @@
+[Unit]
+Description=Osven City Discord Bot
+After=network.target
+
+[Service]
+Type=simple
+User=kingster
+WorkingDirectory=/home/kingster/osven-city/discord/bot
+ExecStart=/usr/bin/node /home/kingster/osven-city/discord/bot/index.js
+Restart=on-failure
+RestartSec=10
+Environment=DISCORD_BOT_TOKEN=your-bot-token-here
+Environment=DISCORD_GUILD_ID=1531548914337972274
+
+[Install]
+WantedBy=multi-user.target

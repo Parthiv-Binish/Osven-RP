@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven UI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- CIRCLE -->
+        <transition name="fade">
+            <div v-if="showCircle" class="overlay" @click.self="circleFail">
+                <div class="circle-container">
+                    <canvas ref="circleCanvas" width="300" height="300"></canvas>
+                    <div class="circle-timer">{{ circleTimer }}s</div>
+                    <div class="circle-round">Round {{ circleCurrent }}/{{ circleTotal }}</div>
+                </div>
+            </div>
+        </transition>
+
+        <!-- THERMITE -->
+        <transition name="fade">
+            <div v-if="showThermite" class="overlay">
+                <div class="thermite-container">
+                    <div class="thermite-header">HACK GRID</div>
+                    <div class="thermite-timer">{{ thermiteTimer }}s</div>
+                    <div class="thermite-grid" :style="{ gridTemplateColumns: 'repeat(' + thermiteGridSize + ', 1fr)' }">
+                        <div v-for="(cell, idx) in thermiteCells" :key="idx"
+                             class="thermite-cell"
+                             :class="{
+                                 'is-highlighted': cell.highlighted,
+                                 'is-correct': cell.state === 'correct',
+                                 'is-wrong': cell.state === 'wrong',
+                                 'is-clicked': cell.state === 'clicked'
+                             }"
+                             @click="thermiteClick(idx)">
+                        </div>
+                    </div>
+                    <div class="thermite-status">{{ thermiteStatus }}</div>
+                </div>
+            </div>
+        </transition>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>

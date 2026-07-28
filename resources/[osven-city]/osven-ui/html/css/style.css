@@ -1,0 +1,23 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; overflow: hidden; background: transparent; }
+.overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); }
+
+/* Circle */
+.circle-container { text-align: center; position: relative; }
+.circle-timer { color: #EDEFF2; font-size: 28px; font-family: 'IBM Plex Mono', monospace; margin-top: 8px; }
+.circle-round { color: #8B93A1; font-size: 14px; margin-top: 4px; }
+
+/* Thermite */
+.thermite-container { background: #0E1116; border: 2px solid #C23B3B; border-radius: 12px; padding: 24px; text-align: center; min-width: 350px; }
+.thermite-header { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; color: #C23B3B; letter-spacing: 2px; margin-bottom: 8px; }
+.thermite-timer { font-family: 'IBM Plex Mono', monospace; font-size: 32px; color: #E8A33D; margin-bottom: 16px; }
+.thermite-grid { display: grid; gap: 4px; margin-bottom: 16px; }
+.thermite-cell { width: 40px; height: 40px; background: #171B22; border: 1px solid #2a2f3a; border-radius: 4px; cursor: pointer; transition: all 0.15s; }
+.thermite-cell:hover { border-color: #8B93A1; }
+.thermite-cell.is-highlighted { background: #2FB6A6; border-color: #2FB6A6; }
+.thermite-cell.is-correct { background: #2FB6A6; border-color: #289a8c; }
+.thermite-cell.is-wrong { background: #C23B3B; border-color: #a32f2f; }
+.thermite-status { color: #8B93A1; font-size: 13px; }
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter, .fade-leave-to { opacity: 0; }

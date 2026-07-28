@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400&display=swap');
+
+:root {
+    --ink: #0E1116; --asphalt: #171B22; --amber: #E8A33D; --teal: #2FB6A6;
+    --crimson: #C23B3B; --fog: #EDEFF2; --steel: #8B93A1;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Inter', sans-serif; --font-mono: 'IBM Plex Mono', monospace;
+    --glass: rgba(23, 27, 34, 0.88); --blur: 16px;
+    --border: 1px solid rgba(237, 239, 242, 0.06);
+    --radius: 10px; --radius-sm: 6px; --fast: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+
+body { font-family: var(--font-body); overflow: hidden; background: transparent; color: var(--fog); font-size: 13px; }
+
+/* ── Widget ── */
+.jail-widget {
+    position: fixed; bottom: 180px; left: 50%; transform: translateX(-50%);
+    background: var(--glass); backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: var(--border); border-radius: 12px;
+    overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    z-index: 150; min-width: 300px; text-align: center;
+    animation: widgetIn 300ms var(--fast);
+}
+
+@keyframes widgetIn {
+    0% { opacity: 0; transform: translateX(-50%) translateY(12px) scale(0.96); }
+    100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+.jail-widget.is-community { border-color: rgba(47, 182, 166, 0.2); }
+
+.jail-accent {
+    height: 3px; width: 100%;
+    transition: background var(--fast);
+}
+
+.accent-crimson { background: linear-gradient(90deg, var(--crimson), transparent); }
+.accent-teal { background: linear-gradient(90deg, var(--teal), transparent); }
+
+.jail-content { padding: 16px 24px; }
+
+.jail-label {
+    font-family: var(--font-display); font-size: 16px; font-weight: 700;
+    letter-spacing: 2px; margin-bottom: 4px;
+}
+
+.jail-timer {
+    font-family: var(--font-mono); font-size: 12px; color: var(--steel); margin: 4px 0;
+}
+
+.jail-btn {
+    margin-top: 8px; padding: 8px 20px;
+    background: linear-gradient(135deg, var(--teal), #289a8c);
+    color: var(--ink); border: none; border-radius: var(--radius-sm);
+    font-family: var(--font-display); font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all var(--fast); letter-spacing: 0.5px;
+}
+.jail-btn:hover { box-shadow: 0 4px 12px rgba(47, 182, 166, 0.2); }
+
+.jail-progress-bar {
+    height: 4px; background: rgba(237, 239, 242, 0.1);
+    border-radius: 2px; margin-top: 10px; overflow: hidden;
+}
+
+.jail-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--amber));
+    border-radius: 2px; transition: width 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Transition ── */
+.jail-widget-enter-active, .jail-widget-leave-active { transition: all 300ms ease; }
+.jail-widget-enter, .jail-widget-leave-to {
+    opacity: 0; transform: translateX(-50%) translateY(12px);
+}

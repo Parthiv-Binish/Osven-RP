@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven City — Spawn Select</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div id="app">
+        <transition name="spawn-overlay">
+            <div v-if="visible" class="spawn-overlay">
+                <div class="spawn-panel">
+                    <!-- Greeting -->
+                    <div class="spawn-greeting">Welcome back, <strong>{{ playerName }}</strong></div>
+
+                    <!-- Location Grid -->
+                    <div class="spawn-grid">
+                        <div
+                            v-for="loc in locations"
+                            :key="loc.id"
+                            class="spawn-card"
+                            :class="{ 'is-selected': selected === loc.id }"
+                            @click="select(loc)"
+                        >
+                            <div class="spawn-card-icon" v-html="loc.icon"></div>
+                            <div class="spawn-card-label">{{ loc.label }}</div>
+                            <div v-if="loc.id === 'last' && lastTimestamp" class="spawn-card-desc">Left at {{ lastTimestamp }}</div>
+                            <div v-else class="spawn-card-desc">{{ loc.desc }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Spawn Button -->
+                    <button
+                        class="spawn-btn"
+                        :class="{ 'is-disabled': !selected, 'is-spawning': spawning }"
+                        :disabled="!selected || spawning"
+                        @click="doSpawn"
+                    >
+                        <span v-if="spawning" class="spawn-spinner"></span>
+                        <span v-else>Spawn</span>
+                    </button>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

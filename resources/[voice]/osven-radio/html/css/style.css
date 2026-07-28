@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap');
+
+:root {
+    --ink: #0E1116; --asphalt: #171B22; --amber: #E8A33D; --teal: #2FB6A6;
+    --crimson: #C23B3B; --fog: #EDEFF2; --steel: #8B93A1;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Inter', sans-serif; --font-mono: 'IBM Plex Mono', monospace;
+    --glass: rgba(23, 27, 34, 0.88); --blur: 16px;
+    --border: 1px solid rgba(237, 239, 242, 0.06);
+    --radius: 12px; --radius-sm: 8px; --fast: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+body { font-family: var(--font-body); overflow: hidden; background: transparent; color: var(--fog); font-size: 13px; }
+
+#radio-ui {
+    display: none; position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); z-index: 500;
+}
+
+.radio-container {
+    background: var(--glass); backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: var(--border); border-radius: 16px; padding: 28px;
+    min-width: 320px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    animation: radioIn 300ms var(--fast);
+}
+
+@keyframes radioIn {
+    0% { opacity: 0; transform: scale(0.92) translateY(12px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.radio-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+}
+
+.radio-icon {
+    width: 36px; height: 36px;
+    background: rgba(47, 182, 166, 0.1); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--teal); font-size: 18px;
+}
+
+.radio-header span {
+    font-family: var(--font-display); font-size: 22px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+}
+
+.radio-body { display: flex; flex-direction: column; gap: 20px; }
+
+/* ── Channel Display ── */
+.channel-display {
+    display: flex; justify-content: center; align-items: baseline; gap: 8px;
+    padding: 16px;
+    background: rgba(14, 17, 22, 0.5); backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--radius-sm);
+}
+
+#channel-label {
+    font-family: var(--font-display); font-size: 14px; font-weight: 600;
+    color: var(--steel); letter-spacing: 2px;
+}
+
+#channel-value {
+    font-family: var(--font-mono); font-size: 36px; font-weight: 500;
+    color: var(--amber); min-width: 60px; text-align: center;
+}
+
+/* ── Channel Controls ── */
+.channel-controls { display: flex; gap: 8px; }
+
+.channel-controls input {
+    flex: 1; padding: 10px 14px;
+    background: rgba(14, 17, 22, 0.6); border: var(--border);
+    border-radius: var(--radius-sm); color: var(--fog); font-size: 14px;
+    font-family: var(--font-mono); outline: none; transition: border-color var(--fast);
+}
+.channel-controls input:focus { border-color: rgba(232, 163, 61, 0.3); }
+
+.channel-controls button {
+    padding: 10px 20px; border: none; border-radius: var(--radius-sm);
+    cursor: pointer; font-family: var(--font-display); font-weight: 700;
+    font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+    transition: all var(--fast);
+}
+
+#join-btn {
+    background: linear-gradient(135deg, var(--teal), #289a8c); color: var(--ink);
+}
+#join-btn:hover { box-shadow: 0 4px 12px rgba(47, 182, 166, 0.2); }
+
+#leave-btn {
+    background: var(--crimson); color: var(--fog);
+}
+#leave-btn:hover { background: #a32f2f; }
+
+/* ── Volume Control ── */
+.volume-control {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px;
+    background: rgba(14, 17, 22, 0.4); backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--radius-sm);
+}
+
+.volume-control label {
+    font-family: var(--font-display); font-size: 12px; font-weight: 600;
+    color: var(--steel); letter-spacing: 1px; text-transform: uppercase;
+    min-width: 50px;
+}
+
+.volume-control input {
+    flex: 1; height: 4px;
+    -webkit-appearance: none; appearance: none;
+    background: rgba(237, 239, 242, 0.1); border-radius: 2px;
+    outline: none;
+}
+
+.volume-control input::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    background: var(--teal); border-radius: 50%; cursor: pointer;
+    box-shadow: 0 0 8px rgba(47, 182, 166, 0.3);
+}
+
+.volume-control input::-moz-range-thumb {
+    width: 16px; height: 16px;
+    background: var(--teal); border: none; border-radius: 50%; cursor: pointer;
+}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven City — Medical State</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div id="app">
+        <transition name="med-state">
+            <div v-if="state !== 'normal'" class="med-overlay" :class="'med-' + state">
+                <!-- Vignette (CSS-driven) -->
+                <div class="med-vignette" :class="'vignette-' + state"></div>
+
+                <!-- Status Text -->
+                <div class="med-status">
+                    <div class="med-status-text">{{ statusText }}</div>
+                    <div v-if="countdown > 0" class="med-countdown">{{ formattedCountdown }}</div>
+                    <div v-if="state === 'critical'" class="med-hint">Use a bandage or seek EMS</div>
+                </div>
+            </div>
+        </transition>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>

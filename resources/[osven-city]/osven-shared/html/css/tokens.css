@@ -1,0 +1,59 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Osven City — Design Token Sheet
+   Source: Osven City UI Design Guide v2 ("Monsoon Noir")
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+    /* ── Color Tokens ── */
+    --osven-ink: #0E1116;
+    --osven-asphalt: #171B22;
+    --osven-amber: #E8A33D;
+    --osven-teal: #2FB6A6;
+    --osven-crimson: #C23B3B;
+    --osven-fog: #EDEFF2;
+    --osven-steel: #8B93A1;
+
+    /* ── Semantic Aliases ── */
+    --osven-bg-primary: var(--osven-ink);
+    --osven-bg-surface: var(--osven-asphalt);
+    --osven-accent-primary: var(--osven-amber);
+    --osven-accent-official: var(--osven-teal);
+    --osven-accent-danger: var(--osven-crimson);
+    --osven-text-primary: var(--osven-fog);
+    --osven-text-secondary: var(--osven-steel);
+
+    /* ── Typography ── */
+    --osven-font-display: 'Barlow Condensed', 'Impact', sans-serif;
+    --osven-font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --osven-font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+    /* ── Type Scale ── */
+    --osven-text-display-xl: 28px;
+    --osven-text-display-l: 20px;
+    --osven-text-display-m: 15px;
+    --osven-text-body: 13px;
+    --osven-text-body-small: 11px;
+    --osven-text-mono: 12px;
+
+    /* ── Spacing (8px base) ── */
+    --osven-space-1: 8px;
+    --osven-space-2: 16px;
+    --osven-space-3: 24px;
+    --osven-space-4: 32px;
+    --osven-space-6: 48px;
+
+    /* ── Radii ── */
+    --osven-radius-panel: 6px;
+    --osven-radius-input: 4px;
+    --osven-radius-pill: 999px;
+
+    /* ── Motion ── */
+    --osven-motion-fast: 120ms ease-out;
+    --osven-motion-slow: 280ms ease-in-out;
+
+    /* ── Glassmorphism ── */
+    --osven-glass-bg: rgba(23, 27, 34, 0.85);
+    --osven-glass-blur: 12px;
+
+    /* ── Borders ── */
+    --osven-border-subtle: 1px solid rgba(237, 239, 242, 0.08);
+}

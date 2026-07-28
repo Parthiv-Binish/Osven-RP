@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven Radio</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="radio-ui">
+        <div class="radio-container">
+            <div class="radio-header">
+                <div class="radio-icon">&#9673;</div>
+                <span>Radio</span>
+            </div>
+            <div class="radio-body">
+                <div class="channel-display">
+                    <span id="channel-label">CH</span>
+                    <span id="channel-value">---</span>
+                </div>
+                <div class="channel-controls">
+                    <input type="number" id="channel-input" placeholder="Enter channel" min="1" max="500">
+                    <button id="join-btn">Join</button>
+                    <button id="leave-btn">Leave</button>
+                </div>
+                <div class="volume-control">
+                    <label>Volume</label>
+                    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.7">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>

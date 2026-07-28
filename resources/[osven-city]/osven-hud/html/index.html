@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven HUD</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div id="app">
+        <div id="top-right-info">
+            <div id="player-identity">
+                <span id="player-name"></span>
+                <span id="player-job">
+                    <span id="job-icon"></span>
+                    <span id="job-title"></span>
+                </span>
+            </div>
+            <div id="player-finances">
+                <span id="cash-display"></span>
+                <span id="bank-display"></span>
+            </div>
+        </div>
+        <div id="bottom-hud">
+            <div id="hud-vitals">
+                <div class="vital-ring" id="health-ring">
+                    <svg viewBox="0 0 44 44">
+                        <circle cx="22" cy="22" r="18" class="ring-track"/>
+                        <circle cx="22" cy="22" r="18" class="ring-fill" id="health-fill"/>
+                    </svg>
+                    <span class="vital-icon">❤</span>
+                </div>
+                <div class="vital-ring hidden" id="armor-ring">
+                    <svg viewBox="0 0 44 44">
+                        <circle cx="22" cy="22" r="18" class="ring-track"/>
+                        <circle cx="22" cy="22" r="18" class="ring-fill" id="armor-fill"/>
+                    </svg>
+                    <span class="vital-icon">🛡</span>
+                </div>
+            </div>
+            <div id="hud-statuses">
+                <div class="status-bar" id="hunger-bar">
+                    <span class="status-icon">🍽</span>
+                    <div class="bar-track"><div class="bar-fill" id="hunger-fill"></div></div>
+                </div>
+                <div class="status-bar" id="thirst-bar">
+                    <span class="status-icon">💧</span>
+                    <div class="bar-track"><div class="bar-fill" id="thirst-fill"></div></div>
+                </div>
+                <div class="status-bar hidden" id="stress-bar">
+                    <span class="status-icon">😰</span>
+                    <div class="bar-track"><div class="bar-fill" id="stress-fill"></div></div>
+                </div>
+            </div>
+            <div id="voice-indicator" class="hidden">
+                <span id="voice-icon">🔊</span>
+            </div>
+        </div>
+        <div id="oxygen-overlay" class="hidden">
+            <div class="vital-ring" id="oxygen-ring">
+                <svg viewBox="0 0 44 44">
+                    <circle cx="22" cy="22" r="18" class="ring-track"/>
+                    <circle cx="22" cy="22" r="18" class="ring-fill" id="oxygen-fill"/>
+                </svg>
+            </div>
+        </div>
+        <div id="notification-container"></div>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>

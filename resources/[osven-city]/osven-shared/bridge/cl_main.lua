@@ -1,0 +1,1 @@
+-- Shared utility functions for Osven City resources

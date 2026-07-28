@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven City — ID Card</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div id="app">
+        <transition name="id-overlay">
+            <div v-if="visible" class="id-overlay" @click.self="close">
+                <div class="id-card" :class="{ 'is-presented': presented }">
+                    <div class="id-accent-bar"></div>
+                    <div class="id-inner">
+                        <div class="id-left">
+                            <div class="id-photo">
+                                <div class="id-photo-placeholder">
+                                    <span v-if="photo">{{ photo }}</span>
+                                    <span v-else>&#128100;</span>
+                                </div>
+                            </div>
+                            <div class="id-licenses">
+                                <div class="id-license">
+                                    <span class="id-license-label">DRIVING</span>
+                                    <span class="id-license-value" :class="licenseClass(driving)">{{ driving }}</span>
+                                </div>
+                                <div class="id-license">
+                                    <span class="id-license-label">WEAPON</span>
+                                    <span class="id-license-value" :class="licenseClass(weapon)">{{ weapon }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="id-right">
+                            <div class="id-header">
+                                <div class="id-city">OSVEN CITY</div>
+                                <div class="id-card-label">CITIZEN ID</div>
+                            </div>
+                            <div class="id-fields">
+                                <div class="id-field">
+                                    <span class="id-field-label">Name</span>
+                                    <span class="id-field-value">{{ name }}</span>
+                                </div>
+                                <div class="id-field">
+                                    <span class="id-field-label">DOB</span>
+                                    <span class="id-field-value">{{ dob }}</span>
+                                </div>
+                                <div class="id-field">
+                                    <span class="id-field-label">ID</span>
+                                    <span class="id-field-value id-citizen-id">{{ citizenId }}</span>
+                                </div>
+                                <div class="id-field">
+                                    <span class="id-field-label">Job</span>
+                                    <span class="id-field-value">{{ job }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>

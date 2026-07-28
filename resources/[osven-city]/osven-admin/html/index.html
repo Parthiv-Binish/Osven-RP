@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven City — Admin</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div id="app">
+        <transition name="admin-overlay">
+            <div v-if="visible" class="admin-overlay" @click.self="close">
+                <div class="admin-panel">
+                    <!-- Tabs -->
+                    <div class="admin-tabs">
+                        <button v-for="tab in tabs" :key="tab.id" class="admin-tab" :class="{ 'is-active': activeTab === tab.id }" @click="activeTab = tab.id">{{ tab.label }}</button>
+                    </div>
+
+                    <!-- PLAYERS TAB -->
+                    <div v-if="activeTab === 'players'" class="admin-tab-content">
+                        <input v-model="playerSearch" type="text" class="admin-search" placeholder="Search player..." />
+                        <div class="admin-player-list">
+                            <div v-for="p in filteredPlayers" :key="p.id" class="admin-player-row">
+                                <div class="admin-player-info">
+                                    <span class="admin-player-name">{{ p.name }}</span>
+                                    <span class="admin-player-id">ID {{ p.serverId }}</span>
+                                </div>
+                                <div class="admin-player-actions">
+                                    <button class="admin-action" @click="doAction('tpTo', p.serverId)">TP</button>
+                                    <button class="admin-action" @click="doAction('spectate', p.serverId)">Spectate</button>
+                                    <button class="admin-action" @click="doAction('freeze', p.serverId)">Freeze</button>
+                                    <button class="admin-action" @click="doAction('revive', p.serverId)">Revive</button>
+                                    <button class="admin-action admin-action-destructive" @click="confirmAction('kick', p)">Kick</button>
+                                    <button class="admin-action admin-action-destructive" @click="confirmAction('ban', p)">Ban</button>
+                                    <button class="admin-action admin-action-destructive" @click="confirmAction('giveMoney', p)">Give$</button>
+                                    <button class="admin-action admin-action-destructive" @click="confirmAction('giveItem', p)">Item</button>
+                                </div>
+                            </div>
+                            <div v-if="filteredPlayers.length === 0" class="admin-empty">No players found.</div>
+                        </div>
+                    </div>
+
+                    <!-- WORLD TAB -->
+                    <div v-if="activeTab === 'world'" class="admin-tab-content">
+                        <div class="admin-world-section">
+                            <h3 class="admin-world-title">Weather</h3>
+                            <select v-model="weather" class="admin-select" @change="setWeather">
+                                <option v-for="w in weathers" :key="w" :value="w">{{ w }}</option>
+                            </select>
+                        </div>
+                        <div class="admin-world-section">
+                            <h3 class="admin-world-title">Time</h3>
+                            <div class="admin-world-row">
+                                <input v-model.number="timeHour" type="number" class="admin-input admin-input-sm" min="0" max="23" placeholder="HH" />
+                                <span class="admin-world-colon">:</span>
+                                <input v-model.number="timeMinute" type="number" class="admin-input admin-input-sm" min="0" max="59" placeholder="MM" />
+                                <button class="admin-btn" @click="setTime">Set Time</button>
+                                <button class="admin-btn admin-btn-ghost" @click="freezeTime">Freeze</button>
+                            </div>
+                        </div>
+                        <div class="admin-world-section">
+                            <h3 class="admin-world-title">Spawn Vehicle</h3>
+                            <div class="admin-world-row">
+                                <input v-model="vehicleModel" type="text" class="admin-input" placeholder="Model name (e.g. adder)" />
+                                <button class="admin-btn" :class="{ 'is-disabled': !vehicleModel.trim() }" :disabled="!vehicleModel.trim()" @click="spawnVehicle">Spawn</button>
+                            </div>
+                        </div>
+                        <div class="admin-world-section">
+                            <h3 class="admin-world-title">Announcement</h3>
+                            <textarea v-model="announcement" class="admin-textarea" placeholder="Write announcement..." maxlength="500"></textarea>
+                            <button class="admin-btn" :class="{ 'is-disabled': !announcement.trim() }" :disabled="!announcement.trim()" @click="sendAnnouncement">Send</button>
+                        </div>
+                    </div>
+
+                    <!-- TERRITORIES TAB -->
+                    <div v-if="activeTab === 'territories'" class="admin-tab-content">
+                        <div class="admin-territory-actions">
+                            <button class="admin-btn admin-btn-destructive" @click="resetAllTerritories">Reset All Territories</button>
+                        </div>
+                        <div class="admin-territory-list">
+                            <div v-for="t in territories" :key="t.id" class="admin-territory-row">
+                                <div class="admin-territory-info">
+                                    <span class="admin-territory-name">{{ t.label }}</span>
+                                    <span class="admin-territory-native">Native: {{ t.nativeGang }}</span>
+                                </div>
+                                <div class="admin-territory-owner">
+                                    <span class="admin-territory-label">Owner:</span>
+                                    <span class="admin-territory-value" :class="'gang-' + t.owner">{{ t.owner !== 'none' ? t.owner : 'Unowned' }}</span>
+                                </div>
+                                <select v-model="t.selectedGang" class="admin-select admin-select-sm">
+                                    <option value="none">Unowned</option>
+                                    <option v-for="g in gangOptions" :key="g" :value="g">{{ g }}</option>
+                                </select>
+                                <button class="admin-btn admin-btn-sm" @click="setTerritoryOwner(t.id, t.selectedGang)">Set</button>
+                            </div>
+                            <div v-if="territories.length === 0" class="admin-empty">No territories loaded.</div>
+                        </div>
+                    </div>
+
+                    <!-- LOGS TAB -->
+                    <div v-if="activeTab === 'logs'" class="admin-tab-content">
+                        <div class="admin-logs-filter">
+                            <input v-model="logFilter" type="text" class="admin-search" placeholder="Filter by action type..." />
+                        </div>
+                        <div class="admin-log-list">
+                            <div v-for="log in filteredLogs" :key="log.id" class="admin-log-row">
+                                <span class="admin-log-time">{{ log.timestamp }}</span>
+                                <span class="admin-log-action" :class="'log-' + log.actionType">{{ log.action }}</span>
+                                <span class="admin-log-detail">{{ log.detail }}</span>
+                            </div>
+                            <div v-if="filteredLogs.length === 0" class="admin-empty">No logs found.</div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmation Modal -->
+                    <transition name="admin-modal">
+                        <div v-if="confirmVisible" class="admin-modal-bg" @click.self="cancelConfirm">
+                            <div class="admin-modal">
+                                <div class="admin-modal-title" :class="{ 'is-destructive': confirmActionType !== 'giveMoney' && confirmActionType !== 'giveItem' }">
+                                    {{ confirmTitle }}
+                                </div>
+                                <div class="admin-modal-desc">{{ confirmDesc }}</div>
+                                <div v-if="confirmNeedsReason" class="admin-modal-field">
+                                    <label class="admin-modal-label">Reason</label>
+                                    <input v-model="confirmReason" type="text" class="admin-input" placeholder="Required" />
+                                </div>
+                                <div v-if="confirmNeedsAmount" class="admin-modal-field">
+                                    <label class="admin-modal-label">Amount</label>
+                                    <input v-model.number="confirmAmount" type="number" class="admin-input" placeholder="0" min="0" />
+                                </div>
+                                <div v-if="confirmActionType === 'giveItem'" class="admin-modal-field">
+                                    <label class="admin-modal-label">Item Name</label>
+                                    <input v-model="confirmItemName" type="text" class="admin-input" placeholder="e.g. water" />
+                                </div>
+                                <div class="admin-modal-actions">
+                                    <button class="admin-btn admin-btn-ghost" @click="cancelConfirm">Cancel</button>
+                                    <button class="admin-btn" :class="{ 'is-destructive-btn': confirmActionType === 'kick' || confirmActionType === 'ban' }" @click="executeConfirm">Confirm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </transition>
+                </div>
+            </div>
+        </transition>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>

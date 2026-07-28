@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap');
+
+:root {
+    --ink: #0E1116;
+    --asphalt: #171B22;
+    --amber: #E8A33D;
+    --amber-dim: rgba(232, 163, 61, 0.15);
+    --teal: #2FB6A6;
+    --crimson: #C23B3B;
+    --fog: #EDEFF2;
+    --steel: #8B93A1;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+
+body { overflow: hidden; background: var(--ink); color: var(--fog); font-family: var(--font-body); }
+
+#loading-bg {
+    position: fixed; inset: 0; z-index: 0;
+    background:
+        radial-gradient(ellipse 80% 60% at 50% 50%, rgba(232, 163, 61, 0.03) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(47, 182, 166, 0.03) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 50% at 80% 20%, rgba(232, 163, 61, 0.02) 0%, transparent 50%),
+        linear-gradient(160deg, #0a0c12 0%, #11141d 35%, #0d1018 65%, #0a0c12 100%);
+    animation: bgFloat 20s ease-in-out infinite;
+}
+
+@keyframes bgFloat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+#grid-overlay {
+    position: fixed; inset: 0; z-index: 1;
+    background-image:
+        linear-gradient(rgba(237, 239, 242, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(237, 239, 242, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+}
+
+/* ── Logo ── */
+#loading-logo {
+    position: absolute; top: 48px; left: 48px; z-index: 2;
+}
+
+.logo-emblem {
+    font-size: 24px; color: var(--amber); margin-bottom: 8px;
+    filter: drop-shadow(0 0 12px rgba(232, 163, 61, 0.3));
+    animation: emblemPulse 3s ease-in-out infinite;
+}
+
+@keyframes emblemPulse {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+#loading-logo h1 {
+    font-family: var(--font-display); font-size: 32px; font-weight: 800;
+    letter-spacing: 8px; color: var(--fog); line-height: 1;
+}
+
+.logo-divider {
+    width: 40px; height: 2px; background: linear-gradient(90deg, var(--amber), transparent);
+    margin: 8px 0; border-radius: 1px;
+}
+
+#loading-logo p {
+    font-size: 11px; color: var(--steel); letter-spacing: 3px; text-transform: uppercase;
+    font-weight: 300;
+}
+
+/* ── Tips ── */
+#tip-container {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;
+    text-align: center; max-width: 500px;
+}
+
+.tip-label {
+    display: block; font-family: var(--font-display); font-size: 11px;
+    color: var(--amber); letter-spacing: 3px; margin-bottom: 12px; font-weight: 600;
+}
+
+#tip-text {
+    font-size: 20px; color: var(--fog); font-weight: 300; line-height: 1.5;
+    transition: opacity 0.4s ease; opacity: 0.85;
+}
+
+/* ── Progress ── */
+#progress-container {
+    position: absolute; bottom: 0; left: 0; width: 100%; z-index: 2;
+    padding: 0 48px 32px;
+}
+
+.progress-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+}
+
+#progress-label {
+    font-family: var(--font-display); font-size: 11px; letter-spacing: 3px;
+    color: var(--steel); font-weight: 600;
+}
+
+#progress-pct {
+    font-family: var(--font-mono); font-size: 12px; color: var(--amber);
+}
+
+#progress-track {
+    width: 100%; height: 3px; background: rgba(237, 239, 242, 0.08);
+    border-radius: 2px; overflow: visible; position: relative;
+}
+
+#progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--amber), var(--teal));
+    border-radius: 2px; transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+}
+
+.progress-glow {
+    position: absolute; top: 50%; left: 0; transform: translateY(-50%);
+    width: 40px; height: 16px;
+    background: radial-gradient(ellipse, rgba(232, 163, 61, 0.3), transparent);
+    opacity: 0; transition: opacity 0.3s;
+}
+
+#progress-fill:not([style*="width: 0%"]) ~ .progress-glow,
+#progress-fill[style*="width: 1"] ~ .progress-glow,
+#progress-fill[style*="width: 2"] ~ .progress-glow,
+#progress-fill[style*="width: 3"] ~ .progress-glow,
+#progress-fill[style*="width: 4"] ~ .progress-glow,
+#progress-fill[style*="width: 5"] ~ .progress-glow,
+#progress-fill[style*="width: 6"] ~ .progress-glow,
+#progress-fill[style*="width: 7"] ~ .progress-glow,
+#progress-fill[style*="width: 8"] ~ .progress-glow,
+#progress-fill[style*="width: 9"] ~ .progress-glow,
+#progress-fill[style*="width: 10"] ~ .progress-glow,
+#progress-fill[style*="width: 1"] { opacity: 1; }
+
+/* ── Music Widget ── */
+#music-widget {
+    position: absolute; bottom: 32px; right: 48px; z-index: 2;
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(23, 27, 34, 0.7); border: 1px solid rgba(237, 239, 242, 0.06);
+    border-radius: 12px; padding: 10px 16px;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    transition: all 0.3s ease;
+}
+
+#music-widget:hover {
+    background: rgba(23, 27, 34, 0.85); border-color: rgba(232, 163, 61, 0.2);
+}
+
+#music-toggle {
+    background: none; border: none; color: var(--amber); font-size: 16px;
+    cursor: pointer; opacity: 0.7; transition: opacity 0.2s; padding: 0;
+}
+
+#music-toggle:hover { opacity: 1; }
+
+.music-info { display: flex; flex-direction: column; }
+
+#music-title { font-size: 13px; color: var(--fog); font-weight: 500; }
+#music-artist { font-size: 10px; color: var(--steel); }
+
+.music-eq { display: flex; align-items: flex-end; gap: 2px; height: 16px; }
+
+.music-eq span {
+    width: 2px; background: var(--amber); border-radius: 1px;
+    animation: eqBounce 0.8s ease-in-out infinite alternate;
+}
+
+.music-eq span:nth-child(1) { height: 6px; animation-delay: 0s; }
+.music-eq span:nth-child(2) { height: 10px; animation-delay: 0.15s; }
+.music-eq span:nth-child(3) { height: 14px; animation-delay: 0.3s; }
+.music-eq span:nth-child(4) { height: 8px; animation-delay: 0.45s; }
+
+@keyframes eqBounce {
+    0% { transform: scaleY(0.5); }
+    100% { transform: scaleY(1); }
+}
+
+/* ── Social Links ── */
+#social-links {
+    position: absolute; bottom: 32px; left: 48px; z-index: 2;
+    display: flex; gap: 12px;
+}
+
+.social-link {
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 50%;
+    color: var(--steel); background: rgba(23, 27, 34, 0.5);
+    border: 1px solid rgba(237, 239, 242, 0.06);
+    transition: all 0.25s ease; text-decoration: none;
+}
+
+.social-link:hover {
+    color: var(--amber); background: rgba(232, 163, 61, 0.1);
+    border-color: rgba(232, 163, 61, 0.3); transform: translateY(-2px);
+}
+
+.hidden { display: none !important; }

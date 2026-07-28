@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven City — Jail</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div id="app">
+        <transition name="jail-widget">
+            <div v-if="visible" class="jail-widget" :class="{ 'is-community': communityActive }">
+                <div class="jail-accent" :class="communityActive ? 'accent-teal' : 'accent-crimson'"></div>
+                <div class="jail-content">
+                    <div class="jail-label">{{ communityActive ? 'COMMUNITY SERVICE' : 'IN CUSTODY' }}</div>
+                    <div class="jail-timer">{{ formattedTime }} remaining</div>
+                    <button v-if="!communityActive" class="jail-btn" @click="startCommunityService">Start Community Service</button>
+                    <div v-if="communityActive" class="jail-progress-bar">
+                        <div class="jail-progress-fill" :style="{ width: progressPct + '%' }"></div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>

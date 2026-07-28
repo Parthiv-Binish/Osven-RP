@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven City — Banking</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Full Branch View -->
+        <transition name="bank-overlay">
+            <div v-if="visible && mode === 'branch'" class="bank-overlay" @click.self="close">
+                <div class="bank-panel">
+                    <!-- Balance Header -->
+                    <div class="bank-balance">
+                        <div class="bank-balance-row">
+                            <span class="bank-balance-label">CASH</span>
+                            <span class="bank-balance-value">${{ formatMoney(cash) }}</span>
+                        </div>
+                        <div class="bank-balance-row">
+                            <span class="bank-balance-label">BANK</span>
+                            <span class="bank-balance-value bank-balance-account">${{ formatMoney(bank) }}</span>
+                        </div>
+                        <div class="bank-accent-bar"></div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="bank-tabs">
+                        <button
+                            v-for="tab in tabs"
+                            :key="tab.id"
+                            class="bank-tab"
+                            :class="{ 'is-active': activeTab === tab.id }"
+                            @click="activeTab = tab.id"
+                        >{{ tab.label }}</button>
+                    </div>
+
+                    <!-- Tab Content: Transfer -->
+                    <div v-if="activeTab === 'transfer'" class="bank-transfer">
+                        <div class="bank-field">
+                            <label class="bank-label">Recipient (Citizen ID or Phone)</label>
+                            <div class="bank-lookup-wrap">
+                                <input v-model="transfer.recipient" type="text" class="bank-input" placeholder="OC-XXXXXX or phone number" @input="lookupRecipient" />
+                                <span v-if="transfer.lookupName" class="bank-lookup-name">{{ transfer.lookupName }}</span>
+                                <span v-if="transfer.lookupError" class="bank-lookup-error">{{ transfer.lookupError }}</span>
+                            </div>
+                        </div>
+                        <div class="bank-field">
+                            <label class="bank-label">Amount</label>
+                            <input v-model.number="transfer.amount" type="number" class="bank-input" placeholder="0" min="0" />
+                        </div>
+                        <div class="bank-field">
+                            <label class="bank-label">Note</label>
+                            <input v-model="transfer.note" type="text" class="bank-input" placeholder="Optional note" maxlength="100" />
+                        </div>
+                        <button class="bank-btn" :class="{ 'is-disabled': !canTransfer, 'is-loading': transfer.pending }" :disabled="!canTransfer || transfer.pending" @click="doTransfer">
+                            <span v-if="transfer.pending" class="bank-spinner"></span>
+                            <span v-else>Confirm Transfer</span>
+                        </button>
+                        <div v-if="transfer.result" class="bank-result" :class="transfer.resultType">
+                            {{ transfer.result }}
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Statement -->
+                    <div v-if="activeTab === 'statement'" class="bank-statement">
+                        <div class="bank-statement-list">
+                            <div v-for="txn in transactions" :key="txn.id" class="bank-txn-row">
+                                <span class="bank-txn-date">{{ txn.date }}</span>
+                                <span class="bank-txn-amount" :class="txn.amount >= 0 ? 'is-credit' : 'is-debit'">
+                                    {{ txn.amount >= 0 ? '+' : '' }}${{ formatMoney(Math.abs(txn.amount)) }}
+                                </span>
+                                <span class="bank-txn-desc">{{ txn.description }}</span>
+                            </div>
+                            <div v-if="transactions.length === 0" class="bank-empty">No transactions yet.</div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Loans -->
+                    <div v-if="activeTab === 'loans'" class="bank-loans">
+                        <div class="bank-empty">Loan services coming soon.</div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <!-- Compact ATM View -->
+        <transition name="bank-atm">
+            <div v-if="visible && mode === 'atm'" class="atm-overlay" @click.self="close">
+                <div class="atm-panel">
+                    <div class="atm-balance">
+                        <span class="atm-balance-label">BALANCE</span>
+                        <span class="atm-balance-value">${{ formatMoney(bank) }}</span>
+                    </div>
+                    <div class="atm-actions">
+                        <div class="atm-field">
+                            <label class="atm-label">Amount</label>
+                            <input v-model.number="atmAmount" type="number" class="atm-input" placeholder="0" min="0" />
+                        </div>
+                        <div class="atm-buttons">
+                            <button class="atm-btn" :class="{ 'is-disabled': atmAmount <= 0 || atmAmount > bank }" @click="atmWithdraw">Withdraw</button>
+                            <button class="atm-btn atm-btn-deposit" :class="{ 'is-disabled': atmAmount <= 0 || atmAmount > cash }" @click="atmDeposit">Deposit</button>
+                        </div>
+                    </div>
+                    <div v-if="atmResult" class="atm-result" :class="atmResultType">{{ atmResult }}</div>
+                    <button class="atm-close" @click="close">Close</button>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

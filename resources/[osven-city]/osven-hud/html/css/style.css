@@ -1,0 +1,259 @@
+/*------------------------------------------------------------------------------
+  Osven City HUD v2.0 — Premium Glassmorphism Design
+--------------------------------------------------------------------------------*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+    background: transparent;
+    color: #f0f0f0;
+}
+
+#app {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+/* ── Top-Right Info Bar ── */
+#top-right-info {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    text-align: right;
+}
+
+#player-identity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+#player-name {
+    font-size: 16px;
+    font-weight: 600;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+#player-job {
+    font-size: 13px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#job-icon {
+    font-size: 14px;
+}
+
+#job-title {
+    font-size: 12px;
+}
+
+#player-finances {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+}
+
+#cash-display {
+    color: #d4a017;
+}
+
+#bank-display {
+    color: #6b8e8e;
+}
+
+/* ── Bottom HUD Cluster ── */
+#bottom-hud {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+/* ── Vital Rings ── */
+#hud-vitals {
+    display: flex;
+    gap: 8px;
+}
+
+.vital-ring {
+    width: 44px;
+    height: 44px;
+    position: relative;
+    background: rgba(20, 20, 25, 0.7);
+    border-radius: 50%;
+    backdrop-filter: blur(8px);
+}
+
+.vital-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.ring-track {
+    fill: none;
+    stroke: rgba(255,255,255,0.1);
+    stroke-width: 3;
+}
+
+.ring-fill {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease;
+}
+
+#health-fill { stroke: #f0f0f0; }
+.vital-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* ── Status Bars ── */
+#hud-statuses {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.status-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-icon {
+    font-size: 12px;
+    width: 16px;
+    text-align: center;
+}
+
+.bar-track {
+    width: 60px;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+#hunger-fill { background: linear-gradient(90deg, #c8962e, #d4a017); }
+#thirst-fill { background: linear-gradient(90deg, #c8962e, #d4a017); }
+#stress-fill { background: linear-gradient(90deg, #8b2020, #c0392b); }
+
+/* ── Voice Indicator ── */
+#voice-indicator {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    background: rgba(20,20,25,0.6);
+    padding: 2px 8px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+}
+
+/* ── Oxygen Overlay ── */
+#oxygen-overlay {
+    position: absolute;
+    bottom: 88px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#oxygen-fill { stroke: #5fa8a8; }
+
+/* ── Notification Container ── */
+#notification-container {
+    position: absolute;
+    top: 64px;
+    right: 16px;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.notification {
+    background: rgba(30, 30, 38, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 8px;
+    padding: 10px 14px;
+    border-left: 4px solid #888;
+    animation: slideIn 0.28s ease-out;
+    pointer-events: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.notification.info { border-color: #6b8e8e; }
+.notification.success { border-color: #2e7d6f; }
+.notification.warning { border-color: #d4a017; }
+.notification.error { border-color: #c0392b; }
+.notification.admin {
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 0;
+    border-left: 4px solid #d4a017;
+    background: rgba(0,0,0,0.8);
+    z-index: 999;
+}
+
+.notification-title {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.notification-message {
+    font-size: 13px;
+    color: #ccc;
+}
+
+.notification-time {
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    color: #666;
+    margin-top: 2px;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* ── Utilities ── */
+.hidden { display: none !important; }

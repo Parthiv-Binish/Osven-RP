@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven City — Create Character</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div id="app">
+        <transition name="cc-overlay">
+            <div v-if="visible" class="cc-overlay">
+                <div class="cc-panel">
+                    <!-- Step Indicator -->
+                    <div class="cc-steps">
+                        <div
+                            v-for="(step, idx) in steps"
+                            :key="idx"
+                            class="cc-step"
+                            :class="{
+                                'is-active': currentStep === idx,
+                                'is-done': currentStep > idx
+                            }"
+                            @click="goToStep(idx)"
+                        >
+                            <div class="cc-step-num">{{ idx + 1 }}</div>
+                            <div class="cc-step-label">{{ step }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Main content: Ped preview (left) + Form (right) -->
+                    <div class="cc-body">
+                        <!-- Ped Preview -->
+                        <div class="cc-preview">
+                            <div class="cc-preview-placeholder">
+                                <span>Ped Preview</span>
+                                <span class="cc-preview-hint">3/4 camera</span>
+                            </div>
+                        </div>
+
+                        <!-- Form Panel -->
+                        <div class="cc-form">
+                            <!-- Step 1: Identity -->
+                            <div v-if="currentStep === 0" class="cc-form-content">
+                                <div class="cc-field">
+                                    <label class="cc-label">First Name</label>
+                                    <input v-model="form.firstName" type="text" class="cc-input" :class="{ 'has-error': errors.firstName }" placeholder="Enter first name" maxlength="32" />
+                                    <div v-if="errors.firstName" class="cc-error-text">Required</div>
+                                </div>
+                                <div class="cc-field">
+                                    <label class="cc-label">Last Name</label>
+                                    <input v-model="form.lastName" type="text" class="cc-input" :class="{ 'has-error': errors.lastName }" placeholder="Enter last name" maxlength="32" />
+                                    <div v-if="errors.lastName" class="cc-error-text">Required</div>
+                                </div>
+                                <div class="cc-field">
+                                    <label class="cc-label">Gender</label>
+                                    <div class="cc-toggle-group">
+                                        <button class="cc-toggle" :class="{ 'is-active': form.gender === 'male' }" @click="form.gender = 'male'">Male</button>
+                                        <button class="cc-toggle" :class="{ 'is-active': form.gender === 'female' }" @click="form.gender = 'female'">Female</button>
+                                    </div>
+                                </div>
+                                <div class="cc-field">
+                                    <label class="cc-label">Date of Birth</label>
+                                    <input v-model="form.dob" type="text" class="cc-input" :class="{ 'has-error': errors.dob }" placeholder="DD/MM/YYYY" maxlength="10" />
+                                    <div v-if="errors.dob" class="cc-error-text">Required</div>
+                                </div>
+                                <div class="cc-field">
+                                    <label class="cc-label">Backstory <span class="cc-optional">(optional)</span></label>
+                                    <textarea v-model="form.backstory" class="cc-textarea" placeholder="Who is your character?" maxlength="500"></textarea>
+                                    <div class="cc-char-count">{{ form.backstory.length }}/500</div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Appearance -->
+                            <div v-if="currentStep === 1" class="cc-form-content">
+                                <div class="cc-section" v-for="section in appearanceSections" :key="section.id">
+                                    <div class="cc-section-header" @click="section.open = !section.open">
+                                        <span>{{ section.label }}</span>
+                                        <span class="cc-section-arrow" :class="{ 'is-open': section.open }">&#9654;</span>
+                                    </div>
+                                    <div v-if="section.open" class="cc-section-body">
+                                        <div v-for="slider in section.sliders" :key="slider.id" class="cc-slider-group">
+                                            <div class="cc-slider-header">
+                                                <span class="cc-slider-label">{{ slider.label }}</span>
+                                                <span class="cc-slider-value">{{ form.appearance[slider.id] || 0 }}</span>
+                                            </div>
+                                            <input type="range" v-model.number="form.appearance[slider.id]" :min="slider.min || 0" :max="slider.max || 100" class="cc-slider" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Outfit -->
+                            <div v-if="currentStep === 2" class="cc-form-content">
+                                <div class="cc-outfit-grid">
+                                    <div
+                                        v-for="outfit in outfits"
+                                        :key="outfit.id"
+                                        class="cc-outfit-card"
+                                        :class="{ 'is-selected': form.outfit === outfit.id }"
+                                        @click="form.outfit = outfit.id"
+                                    >
+                                        <div class="cc-outfit-icon">&#128131;</div>
+                                        <div class="cc-outfit-label">{{ outfit.label }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Actions -->
+                    <div class="cc-actions">
+                        <button v-if="currentStep > 0" class="cc-btn cc-btn-ghost" @click="prevStep">Back</button>
+                        <button v-if="currentStep < 2" class="cc-btn cc-btn-primary" :class="{ 'is-disabled': !isStepValid }" :disabled="!isStepValid" @click="nextStep">Continue</button>
+                        <button v-if="currentStep === 2" class="cc-btn cc-btn-primary" :class="{ 'is-disabled': !isStepValid }" :disabled="!isStepValid" @click="confirmCharacter">Confirm Character</button>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

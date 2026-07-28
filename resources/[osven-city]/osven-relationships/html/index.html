@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven City — Relationships</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <transition name="fade">
+            <div v-if="visible && view === 'menu'" class="overlay" @click.self="close">
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title">Relationships</span>
+                        <button class="panel-close" @click="close">&times;</button>
+                    </div>
+                    <div class="panel-body">
+                        <div v-if="married" class="panel-section">
+                            <div class="spouse-card">
+                                <div class="spouse-icon">&#9829;</div>
+                                <div class="spouse-name">{{ spouseName }}</div>
+                                <div class="spouse-label">Your Spouse</div>
+                            </div>
+                            <button class="btn btn-danger" @click="divorce">File for Divorce ($10,000)</button>
+                        </div>
+                        <div v-else class="panel-section">
+                            <div class="panel-info">You are not married.</div>
+                            <div class="panel-subtitle">Stand near the person you want to marry and enter their server ID:</div>
+                            <div class="input-row">
+                                <input v-model="targetId" type="number" class="input" placeholder="Target Server ID" />
+                                <button class="btn btn-primary" @click="propose">Propose</button>
+                            </div>
+                            <div class="panel-note">You need an engagement ring (Gold $5K, Diamond $25K, or Platinum $50K)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <transition name="fade">
+            <div v-if="visible && view === 'proposal'" class="overlay" @click.self="decline">
+                <div class="panel panel-proposal">
+                    <div class="panel-header">
+                        <span class="panel-title">Proposal!</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="proposal-icon">&#9829;</div>
+                        <div class="proposal-text">{{ proposalFrom }} wants to marry you!</div>
+                        <div class="proposal-ring">Ring: {{ proposalRing }}</div>
+                        <div class="proposal-actions">
+                            <button class="btn btn-primary" @click="accept">Accept</button>
+                            <button class="btn btn-danger" @click="decline">Decline</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>

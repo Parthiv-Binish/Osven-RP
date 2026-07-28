@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osven City Chat</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.16/vue.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Notification Cards (bottom-left stack) -->
+        <transition-group name="card" tag="div" class="card-stack">
+            <div
+                v-for="msg in visibleMessages"
+                :key="msg.id"
+                class="chat-card"
+                :class="{ 'is-hovered': msg.hovered }"
+                :style="{ borderLeftColor: msg.accent }"
+                @mouseenter="msg.hovered = true"
+                @mouseleave="msg.hovered = false"
+                @click="openHistory"
+            >
+                <div class="card-header">
+                    <span class="card-icon" v-html="msg.icon"></span>
+                    <span class="card-label" :style="{ color: msg.accent }">{{ msg.label }}</span>
+                    <span class="card-sender">{{ msg.sender }}</span>
+                    <span class="card-time">{{ msg.timestamp }}</span>
+                </div>
+                <div class="card-body">{{ msg.message }}</div>
+            </div>
+        </transition-group>
+
+        <!-- Command Input -->
+        <transition name="fade">
+            <div v-if="inputActive" class="chat-input-overlay" @click.self="closeInput">
+                <div class="chat-input-box">
+                    <input
+                        ref="chatInput"
+                        v-model="inputText"
+                        type="text"
+                        class="chat-input-field"
+                        placeholder="Type a message... /me /do /ooc"
+                        @keydown.enter="sendMessage"
+                        @keydown.escape="closeInput"
+                        autocomplete="off"
+                    />
+                    <div class="chat-input-hint">
+                        <span>TAB to type</span>
+                        <span>ENTER to send</span>
+                        <span>ESC to cancel</span>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <!-- History Panel -->
+        <transition name="panel">
+            <div v-if="historyVisible" class="history-panel" @click.self="closeHistory">
+                <div class="history-box">
+                    <div class="history-header">
+                        <span class="history-title">CHAT HISTORY</span>
+                        <input v-model="historyFilter" type="text" class="history-search" placeholder="Search messages..." autocomplete="off" />
+                        <button class="history-close" @click="closeHistory">&times;</button>
+                    </div>
+                    <div class="history-list">
+                        <div v-for="hmsg in filteredHistory" :key="hmsg.id" class="history-item">
+                            <span class="history-accent" :style="{ background: hmsg.accent }"></span>
+                            <div class="history-content">
+                                <div class="history-meta">
+                                    <span class="history-label" :style="{ color: hmsg.accent }">{{ hmsg.label }}</span>
+                                    <span class="history-sender">{{ hmsg.sender }}</span>
+                                    <span class="history-time">{{ hmsg.timestamp }}</span>
+                                </div>
+                                <div class="history-body">{{ hmsg.message }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

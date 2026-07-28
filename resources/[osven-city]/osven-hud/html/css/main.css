@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+    --ink: #0E1116; --asphalt: #171B22; --amber: #E8A33D; --teal: #2FB6A6;
+    --crimson: #C23B3B; --fog: #EDEFF2; --steel: #8B93A1;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Inter', sans-serif; --font-mono: 'IBM Plex Mono', monospace;
+    --glass: rgba(23, 27, 34, 0.85); --blur: 14px;
+    --border: 1px solid rgba(237, 239, 242, 0.06);
+    --fast: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    --slow: 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+
+body { font-family: var(--font-body); overflow: hidden; background: transparent; color: var(--fog); }
+
+#app { width: 100vw; height: 100vh; position: relative; }
+
+/* ── Top-Right Info ── */
+#top-right-info {
+    position: absolute; top: 16px; right: 16px; text-align: right;
+    background: var(--glass); backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: var(--border); border-radius: 10px;
+    padding: 10px 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+#player-identity { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+#player-name { font-size: 15px; font-weight: 600; }
+#player-job { font-size: 12px; color: var(--steel); display: flex; align-items: center; gap: 4px; }
+#job-icon { font-size: 13px; }
+#job-title { font-size: 11px; }
+
+#player-finances {
+    display: flex; gap: 14px; margin-top: 6px;
+    font-family: var(--font-mono); font-size: 12px;
+    padding-top: 6px; border-top: 1px solid rgba(237, 239, 242, 0.06);
+}
+
+#cash-display { color: var(--amber); }
+#cash-display::before { content: '$'; opacity: 0.6; margin-right: 2px; }
+#bank-display { color: var(--teal); }
+#bank-display::before { content: '$'; opacity: 0.6; margin-right: 2px; }
+
+/* ── Bottom HUD ── */
+#bottom-hud {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: flex-end; gap: 20px;
+}
+
+/* ── Vital Rings ── */
+#hud-vitals { display: flex; gap: 8px; }
+
+.vital-ring {
+    width: 48px; height: 48px; position: relative;
+    background: var(--glass); border-radius: 50%;
+    backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur));
+    border: var(--border); transition: all var(--fast);
+}
+
+.vital-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 3; }
+
+.ring-fill {
+    fill: none; stroke-width: 3; stroke-linecap: round;
+    transition: stroke-dashoffset var(--slow), stroke var(--slow);
+}
+
+.vital-icon {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 14px; opacity: 0.7; pointer-events: none;
+}
+
+#health-fill { stroke: var(--fog); filter: drop-shadow(0 0 4px rgba(237, 239, 242, 0.2)); }
+#armor-fill { stroke: var(--teal); filter: drop-shadow(0 0 4px rgba(47, 182, 166, 0.2)); }
+#oxygen-fill { stroke: var(--teal); filter: drop-shadow(0 0 4px rgba(47, 182, 166, 0.2)); }
+
+/* ── Status Bars ── */
+#hud-statuses { display: flex; flex-direction: column; gap: 6px; }
+
+.status-bar { display: flex; align-items: center; gap: 8px; }
+
+.status-icon {
+    font-size: 12px; width: 16px; text-align: center;
+    animation: statusPulse 3s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.bar-track {
+    width: 64px; height: 5px;
+    background: rgba(255,255,255,0.07); border-radius: 3px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%; border-radius: 3px;
+    transition: width var(--slow);
+}
+
+#hunger-fill { background: linear-gradient(90deg, #d49436, var(--amber)); }
+#thirst-fill { background: linear-gradient(90deg, #289a8c, var(--teal)); }
+#stress-fill { background: linear-gradient(90deg, #a83232, var(--crimson)); }
+
+/* ── Voice Indicator ── */
+#voice-indicator {
+    position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+    font-size: 14px;
+    background: var(--glass); backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    padding: 3px 10px; border-radius: 8px;
+    border: var(--border); white-space: nowrap;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px;
+}
+
+/* ── Oxygen Overlay ── */
+#oxygen-overlay {
+    position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);
+}
+
+/* ── Notifications ── */
+#notification-container {
+    position: absolute; top: 68px; right: 16px;
+    width: 300px; display: flex; flex-direction: column; gap: 8px;
+    pointer-events: none;
+}
+
+.notification {
+    background: var(--glass); backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border-radius: 10px; padding: 12px 16px;
+    border-left: 3px solid var(--steel);
+    animation: notifyIn var(--slow);
+    pointer-events: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    position: relative; overflow: hidden;
+}
+
+.notification::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(237,239,242,0.02) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.notification.info { border-color: var(--teal); }
+.notification.success { border-color: var(--teal); }
+.notification.warning { border-color: var(--amber); }
+.notification.error { border-color: var(--crimson); }
+
+.notification.admin {
+    position: fixed; top: 0; left: 0; width: 100%; border-radius: 0;
+    border-left: 3px solid var(--amber);
+    background: var(--ink);
+    z-index: 999; animation: adminSlideIn var(--slow);
+}
+
+@keyframes adminSlideIn {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
+.notification-title { font-size: 10px; font-weight: 600; margin-bottom: 2px; letter-spacing: 0.5px; color: var(--steel); }
+.notification-message { font-size: 13px; font-weight: 400; }
+.notification-time { font-size: 10px; font-family: var(--font-mono); color: var(--steel); margin-top: 4px; opacity: 0.6; }
+
+@keyframes notifyIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes notifyOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* ── Utilities ── */
+.hidden { display: none !important; }

@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap');
+
+:root {
+    --ink: #0E1116; --asphalt: #171B22; --amber: #E8A33D; --teal: #2FB6A6;
+    --crimson: #C23B3B; --fog: #EDEFF2; --steel: #8B93A1;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Inter', sans-serif; --font-mono: 'IBM Plex Mono', monospace;
+    --glass: rgba(23, 27, 34, 0.88); --blur: 16px;
+    --border: 1px solid rgba(237, 239, 242, 0.06);
+    --radius: 10px; --fast: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    --slow: 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+
+body {
+    font-family: var(--font-body); overflow: hidden;
+    background: transparent; color: var(--fog); font-size: 13px;
+}
+
+/* ── Overlay ── */
+.spawn-overlay {
+    position: fixed; inset: 0; display: flex; align-items: center;
+    justify-content: center;
+    background: rgba(14, 17, 22, 0.75);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+
+.spawn-panel {
+    width: 500px;
+    background: var(--glass); backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: var(--border); border-radius: 14px;
+    padding: 36px;
+    box-shadow: 0 24px 72px rgba(0,0,0,0.5);
+    animation: panelIn 300ms var(--fast);
+}
+
+@keyframes panelIn {
+    0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Greeting ── */
+.spawn-greeting {
+    font-family: var(--font-display); font-size: 24px; font-weight: 700;
+    text-align: center; margin-bottom: 28px; letter-spacing: 0.5px;
+}
+
+.spawn-greeting strong { color: var(--amber); font-weight: 800; }
+
+/* ── Location Cards ── */
+.spawn-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-bottom: 28px;
+}
+
+.spawn-card {
+    background: rgba(14, 17, 22, 0.5); backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid transparent; border-radius: var(--radius);
+    padding: 20px 16px; text-align: center; cursor: pointer;
+    transition: all var(--fast);
+    position: relative; overflow: hidden;
+}
+
+.spawn-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(237,239,242,0.02) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.spawn-card:hover {
+    background: rgba(14, 17, 22, 0.8);
+    border-color: rgba(232, 163, 61, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.spawn-card.is-selected {
+    border-color: var(--amber);
+    background: rgba(232, 163, 61, 0.08);
+    box-shadow: 0 0 0 1px var(--amber), 0 8px 24px rgba(232, 163, 61, 0.1);
+}
+
+.spawn-card-icon { font-size: 28px; margin-bottom: 8px; filter: grayscale(0.2); }
+.spawn-card.is-selected .spawn-card-icon { filter: none; }
+.spawn-card-label { font-family: var(--font-display); font-size: 16px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 4px; }
+.spawn-card-desc { font-size: 10px; color: var(--steel); font-weight: 400; }
+
+/* ── Spawn Button ── */
+.spawn-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--amber), #d49436);
+    color: var(--ink); border: none; border-radius: 8px;
+    padding: 14px; font-family: var(--font-display);
+    font-size: 16px; font-weight: 700; letter-spacing: 2px;
+    cursor: pointer; transition: all var(--fast); text-transform: uppercase;
+}
+
+.spawn-btn:hover:not(.is-disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(232, 163, 61, 0.25);
+}
+
+.spawn-btn:active:not(.is-disabled) { transform: translateY(0); }
+
+.spawn-btn.is-disabled {
+    background: var(--steel); opacity: 0.3; cursor: not-allowed;
+}
+
+.spawn-spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 2px solid var(--ink); border-top-color: transparent;
+    border-radius: 50%; animation: spawnSpin 600ms linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes spawnSpin { to { transform: rotate(360deg); } }
+
+/* ── Transitions ── */
+.spawn-overlay-enter-active, .spawn-overlay-leave-active { transition: opacity 300ms ease; }
+.spawn-overlay-enter, .spawn-overlay-leave-to { opacity: 0; }

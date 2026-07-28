@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap');
+
+:root {
+    --ink: #0E1116; --asphalt: #171B22; --amber: #E8A33D; --teal: #2FB6A6;
+    --crimson: #C23B3B; --fog: #EDEFF2; --steel: #8B93A1;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Inter', sans-serif; --font-mono: 'IBM Plex Mono', monospace;
+    --glass: rgba(23, 27, 34, 0.88); --blur: 16px;
+    --border: 1px solid rgba(237, 239, 242, 0.06);
+    --radius: 10px; --radius-sm: 6px; --fast: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+body { font-family: var(--font-body); overflow: hidden; background: transparent; color: var(--fog); font-size: 13px; }
+
+.overlay {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(14, 17, 22, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+
+.panel {
+    background: var(--glass); backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur));
+    border: var(--border); border-radius: 14px;
+    min-width: 400px; max-width: 440px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    animation: panelIn 300ms var(--fast);
+    overflow: hidden;
+}
+
+@keyframes panelIn {
+    0% { opacity: 0; transform: scale(0.95) translateY(16px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px; border-bottom: var(--border);
+    background: rgba(14, 17, 22, 0.5); backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.panel-title {
+    font-family: var(--font-display); font-size: 20px; font-weight: 700;
+    letter-spacing: 1.5px; color: var(--amber);
+}
+
+.panel-close {
+    background: none; border: none; color: var(--steel); font-size: 24px;
+    cursor: pointer; transition: color var(--fast); line-height: 1;
+}
+.panel-close:hover { color: var(--crimson); }
+
+.panel-body { padding: 24px; }
+.panel-section { display: flex; flex-direction: column; gap: 16px; }
+.panel-info { color: var(--steel); font-size: 14px; text-align: center; padding: 16px; font-weight: 300; }
+.panel-subtitle { color: var(--steel); font-size: 12px; line-height: 1.5; }
+.panel-note { color: var(--steel); font-size: 11px; text-align: center; font-style: italic; border-top: var(--border); padding-top: 12px; }
+
+.input-row { display: flex; gap: 10px; }
+
+.input {
+    flex: 1; padding: 10px 14px;
+    background: rgba(14, 17, 22, 0.6); border: var(--border);
+    border-radius: var(--radius-sm); color: var(--fog); font-size: 14px;
+    font-family: var(--font-mono); outline: none; transition: border-color var(--fast);
+}
+.input:focus { border-color: rgba(232, 163, 61, 0.3); }
+
+.btn {
+    padding: 10px 24px; border: none; border-radius: var(--radius-sm);
+    cursor: pointer; font-family: var(--font-display); font-weight: 700;
+    font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+    transition: all var(--fast); white-space: nowrap;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--teal), #289a8c); color: var(--ink);
+}
+.btn-primary:hover { box-shadow: 0 4px 12px rgba(47, 182, 166, 0.2); transform: translateY(-1px); }
+
+.btn-danger {
+    background: var(--crimson); color: var(--fog);
+}
+.btn-danger:hover { background: #a32f2f; transform: translateY(-1px); }
+
+/* ── Spouse Card ── */
+.spouse-card {
+    text-align: center; padding: 24px;
+    background: rgba(14, 17, 22, 0.5); backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--radius); position: relative; overflow: hidden;
+}
+
+.spouse-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(194, 59, 59, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.spouse-icon { font-size: 48px; color: var(--crimson); margin-bottom: 8px; filter: drop-shadow(0 0 12px rgba(194, 59, 59, 0.3)); }
+.spouse-name { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--fog); }
+.spouse-label { color: var(--steel); font-size: 12px; margin-top: 4px; }
+
+/* ── Proposal ── */
+.panel-proposal { text-align: center; }
+.proposal-icon { font-size: 64px; color: var(--crimson); margin: 16px 0; filter: drop-shadow(0 0 16px rgba(194, 59, 59, 0.3)); }
+.proposal-text { color: var(--fog); font-size: 18px; margin-bottom: 8px; font-weight: 300; }
+.proposal-ring { color: var(--amber); font-size: 14px; margin-bottom: 24px; font-family: var(--font-display); font-weight: 600; letter-spacing: 0.5px; }
+.proposal-actions { display: flex; gap: 12px; justify-content: center; }
+
+/* ── Transitions ── */
+.fade-enter-active, .fade-leave-active { transition: opacity 260ms ease; }
+.fade-enter, .fade-leave-to { opacity: 0; }

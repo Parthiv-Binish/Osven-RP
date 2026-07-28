@@ -41,11 +41,12 @@ async function runSetup(guild, client) {
 
     // ── Categories ──
     const categoryMappings = [
-        { name: '📢 Information',  configKey: 'infoCategory' },
-        { name: '💬 Community',    configKey: 'communityCategory' },
-        { name: '🎫 Tickets',      configKey: 'ticketsCategory' },
-        { name: '👮 Staff',        configKey: 'staffCategory' },
-        { name: '🚫 Bans',         configKey: 'bansCategory' },
+        { name: '📢 Information',   configKey: 'infoCategory' },
+        { name: '💬 Community',     configKey: 'communityCategory' },
+        { name: '🔒 Departments',   configKey: 'departmentsCategory' },
+        { name: '🎫 Tickets',       configKey: 'ticketsCategory' },
+        { name: '👮 Staff',         configKey: 'staffCategory' },
+        { name: '🚫 Bans',          configKey: 'bansCategory' },
         { name: '🔊 Voice Channels', configKey: 'tempVoiceCategory' },
     ];
 
@@ -85,6 +86,7 @@ async function runSetup(guild, client) {
     const channelMappings = [
         { name: 'announcements',  configKey: 'announcementsChannel', topic: 'Server announcements & updates', cat: 'infoCategory' },
         { name: 'rules',          configKey: 'rulesChannel',         topic: 'Server rules & guidelines',       cat: 'infoCategory' },
+        { name: 'apply',          configKey: 'applyChannel',         topic: 'Apply for jobs, whitelist, or gangs', cat: 'infoCategory' },
         { name: 'whitelist-apps', configKey: 'applicationsChannel',  topic: 'Whitelist applications',          cat: 'infoCategory' },
         { name: 'general',        configKey: 'generalChannel',       topic: 'General discussion',              cat: 'communityCategory' },
         { name: 'gameplay',       configKey: 'gameplayChannel',      topic: 'In-game discussion & stories',    cat: 'communityCategory' },
@@ -95,7 +97,7 @@ async function runSetup(guild, client) {
         { name: 'gangs',          configKey: 'gangsChannel',         topic: 'Gang-related chat',               cat: 'communityCategory' },
         { name: 'admin-chat',     configKey: 'adminChannel',         topic: 'Staff coordination (admin only)', cat: 'staffCategory' },
         { name: 'mod-logs',       configKey: 'webhookChannel',       topic: 'Join/leave/report logs',          cat: 'staffCategory' },
-        { name: 'job-apps',       configKey: 'jobsChannel',          topic: 'Job applications for review',     cat: 'staffCategory' },
+        { name: 'staff-review',   configKey: 'staffReviewChannel',   topic: 'Review & approve applications',   cat: 'staffCategory' },
         { name: 'ban-logs',       configKey: 'bansChannel',          topic: 'Ban notifications',               cat: 'bansCategory' },
         { name: 'wall-of-shame',  configKey: 'wallOfShameChannel',   topic: 'Permanent bans (Wall of Shame)',  cat: 'bansCategory' },
         { name: 'transcripts',    configKey: 'transcriptsChannel',   topic: 'Ticket transcripts',              cat: 'staffCategory' },
@@ -107,7 +109,7 @@ async function runSetup(guild, client) {
             if (exists) continue;
         }
         const parentId = setup.categories[ch.cat] || null;
-        const isStaff = ch.configKey === 'adminChannel' || ch.configKey === 'staffCategory';
+        const isStaff = ch.configKey === 'adminChannel' || ch.configKey === 'staffCategory' || ch.configKey === 'staffReviewChannel';
         const overwrites = isStaff
             ? [{ id: guild.roles.everyone, deny: [PermissionFlagsBits.ViewChannel] }]
             : [];
@@ -121,6 +123,37 @@ async function runSetup(guild, client) {
         setup.channels[ch.configKey] = newCh.id;
         created = true;
         console.log(`[osven-bot] Created channel: #${ch.name} (${newCh.id})`);
+        await delay(500);
+    }
+
+    // ── Department Channels (private, one per job/gang) ──
+    const deptChannels = [
+        { name: '🚔 police-hq',     roleKey: 'policeRole',   cat: 'departmentsCategory' },
+        { name: '🚑 ems-hq',        roleKey: 'emsRole',      cat: 'departmentsCategory' },
+        { name: '🔧 mechanics-hq',  roleKey: 'mechanicRole', cat: 'departmentsCategory' },
+        { name: '🏢 realestate-hq', roleKey: 'realEstateRole', cat: 'departmentsCategory' },
+        { name: '📰 news-hq',       roleKey: 'newsRole',     cat: 'departmentsCategory' },
+    ];
+
+    for (const dc of deptChannels) {
+        if (setup.channels[dc.roleKey]) {
+            const exists = guild.channels.cache.get(setup.channels[dc.roleKey]);
+            if (exists) continue;
+        }
+        const parentId = setup.categories[dc.cat] || null;
+        const roleId = setup.roles[dc.roleKey] || null;
+        const overwrites = [{ id: guild.roles.everyone, deny: [PermissionFlagsBits.ViewChannel] }];
+        if (roleId) overwrites.push({ id: roleId, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] });
+        const newCh = await guild.channels.create({
+            name: dc.name,
+            type: ChannelType.GuildText,
+            topic: `Private channel for ${dc.name.replace(/^[^\s]+\s/, '').replace('-hq', '')}`,
+            parent: parentId,
+            permissionOverwrites: overwrites,
+        });
+        setup.channels[dc.roleKey] = newCh.id;
+        created = true;
+        console.log(`[osven-bot] Created department channel: ${dc.name} (${newCh.id})`);
         await delay(500);
     }
 
@@ -162,14 +195,19 @@ async function runSetup(guild, client) {
 
     // ── Roles ──
     const roleMappings = [
-        { name: 'Visitor',  configKey: 'defaultRole',  color: '#8B93A1',  reason: 'Default role on join', hoist: false },
-        { name: 'Citizen',  configKey: 'approvedRole', color: '#2FB6A6',  reason: 'Whitelist approved role', hoist: true },
-        { name: 'Staff',    configKey: 'staffRole',    color: '#8B93A1',  reason: 'Support staff', hoist: true },
-        { name: 'Mod',      configKey: 'modRole',      color: '#E8A33D',  reason: 'Server moderator', hoist: true },
-        { name: 'Admin',    configKey: 'adminRole',    color: '#C23B3B',  reason: 'Server administrator', hoist: true },
-        { name: 'Police',   configKey: 'policeRole',   color: '#2B6EB0',  reason: 'Police department', hoist: true },
-        { name: 'EMS',      configKey: 'emsRole',      color: '#FFFFFF',  reason: 'EMS department', hoist: true },
-        { name: 'Gang',     configKey: 'gangRole',     color: '#9B59B6',  reason: 'Gang member', hoist: true },
+        { name: 'Visitor',      configKey: 'defaultRole',     color: '#8B93A1', reason: 'Default role on join', hoist: false },
+        { name: 'Citizen',      configKey: 'approvedRole',    color: '#2FB6A6', reason: 'Whitelist approved role', hoist: true },
+        { name: 'Staff',        configKey: 'staffRole',       color: '#8B93A1', reason: 'Support staff', hoist: true },
+        { name: 'Mod',          configKey: 'modRole',         color: '#E8A33D', reason: 'Server moderator', hoist: true },
+        { name: 'Admin',        configKey: 'adminRole',       color: '#C23B3B', reason: 'Server administrator', hoist: true },
+        { name: 'Police',       configKey: 'policeRole',      color: '#2B6EB0', reason: 'Police department', hoist: true },
+        { name: 'EMS',          configKey: 'emsRole',         color: '#FFFFFF', reason: 'EMS department', hoist: true },
+        { name: 'Mechanic',     configKey: 'mechanicRole',    color: '#E67E22', reason: 'Mechanic department', hoist: true },
+        { name: 'Real Estate',  configKey: 'realEstateRole',  color: '#1ABC9C', reason: 'Real Estate department', hoist: true },
+        { name: 'News',         configKey: 'newsRole',        color: '#F1C40F', reason: 'News department', hoist: true },
+        { name: 'Gang Leader',  configKey: 'gangLeaderRole',  color: '#9B59B6', reason: 'Gang leader', hoist: true },
+        { name: 'Gang Co-Leader', configKey: 'gangCoLeaderRole', color: '#8E44AD', reason: 'Gang co-leader', hoist: true },
+        { name: 'Gang Member',  configKey: 'gangMemberRole',  color: '#6C3483', reason: 'Gang member', hoist: true },
     ];
 
     for (const rl of roleMappings) {
@@ -191,24 +229,36 @@ async function runSetup(guild, client) {
 
     // ── Persistent messages ──
 
-    // Whitelist apply button in whitelist-apps channel
-    const applyChId = setup.channels['applicationsChannel'];
+    // Apply channel with all application buttons
+    const applyChId = setup.channels['applyChannel'];
     if (applyChId) {
         const applyCh = guild.channels.cache.get(applyChId);
         if (applyCh) {
-            const existing = (await applyCh.messages.fetch({ limit: 10 }).catch(() => []))
+            const existing = (await applyCh.messages.fetch({ limit: 20 }).catch(() => []))
                 .find(m => m.author.id === client.user.id && m.components.length > 0);
             if (!existing) {
                 const embed = new EmbedBuilder()
                     .setColor(0xE8A33D)
-                    .setTitle('📝 Whitelist Application')
-                    .setDescription('Click the button below to apply for whitelist access to Osven City.\n\n**Requirements:**\n• Discord account linked to FiveM\n• Read and accept the rules\n• Be ready to roleplay')
-                    .setFooter({ text: 'Applications are reviewed by staff' });
-                const row = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder().setCustomId('apply_whitelist_btn').setLabel('Apply Now').setStyle(ButtonStyle.Primary).setEmoji('📝'),
+                    .setTitle('📝 Apply for Osven City')
+                    .setDescription('Select what you want to apply for below. Staff will review your application.')
+                    .addFields(
+                        { name: '👮 Jobs', value: 'Police, EMS, Mechanic, Real Estate, News', inline: true },
+                        { name: '🎮 Whitelist', value: 'General server access', inline: true },
+                        { name: '💀 Gangs', value: 'Join or create a gang', inline: true },
+                    );
+                const row1 = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder().setCustomId('apply_whitelist_btn').setLabel('🎮 Whitelist').setStyle(ButtonStyle.Success),
+                    new ButtonBuilder().setCustomId('apply_police_btn').setLabel('👮 Police').setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder().setCustomId('apply_ems_btn').setLabel('🚑 EMS').setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder().setCustomId('apply_mechanic_btn').setLabel('🔧 Mechanic').setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder().setCustomId('apply_news_btn').setLabel('📰 News').setStyle(ButtonStyle.Primary),
                 );
-                await applyCh.send({ embeds: [embed], components: [row] });
-                console.log('[osven-bot] Sent whitelist application prompt');
+                const row2 = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder().setCustomId('apply_realestate_btn').setLabel('🏢 Real Estate').setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder().setCustomId('apply_gang_btn').setLabel('💀 Gang').setStyle(ButtonStyle.Danger),
+                );
+                await applyCh.send({ embeds: [embed], components: [row1, row2] });
+                console.log('[osven-bot] Sent apply channel buttons');
             }
         }
     }

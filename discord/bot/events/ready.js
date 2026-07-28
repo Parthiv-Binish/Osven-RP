@@ -29,11 +29,57 @@ module.exports = {
             if (setup.channels.applicationsChannel) {
                 client.config.applications.channelId = client.config.applications.channelId || setup.channels.applicationsChannel;
             }
+            if (setup.channels.staffReviewChannel) {
+                client.config.applications.staffReviewChannelId = client.config.applications.staffReviewChannelId || setup.channels.staffReviewChannel;
+            }
             if (setup.roles.approvedRole) {
                 client.config.applications.approvedRoleId = client.config.applications.approvedRoleId || setup.roles.approvedRole;
             }
             if (setup.channels.jobsChannel) {
                 client.config.jobs.channelId = client.config.jobs.channelId || setup.channels.jobsChannel;
+            }
+            if (setup.roles.policeRole) {
+                client.config.jobs.policeRoleId = client.config.jobs.policeRoleId || setup.roles.policeRole;
+            }
+            if (setup.roles.emsRole) {
+                client.config.jobs.emsRoleId = client.config.jobs.emsRoleId || setup.roles.emsRole;
+            }
+            if (setup.roles.mechanicRole) {
+                client.config.jobs.mechanicRoleId = client.config.jobs.mechanicRoleId || setup.roles.mechanicRole;
+            }
+            if (setup.roles.realEstateRole) {
+                client.config.jobs.realEstateRoleId = client.config.jobs.realEstateRoleId || setup.roles.realEstateRole;
+            }
+            if (setup.roles.newsRole) {
+                client.config.jobs.newsRoleId = client.config.jobs.newsRoleId || setup.roles.newsRole;
+            }
+            if (setup.roles.gangLeaderRole) {
+                client.config.gangs.leaderRoleId = client.config.gangs.leaderRoleId || setup.roles.gangLeaderRole;
+            }
+            if (setup.roles.gangCoLeaderRole) {
+                client.config.gangs.coLeaderRoleId = client.config.gangs.coLeaderRoleId || setup.roles.gangCoLeaderRole;
+            }
+            if (setup.roles.gangMemberRole) {
+                client.config.gangs.memberRoleId = client.config.gangs.memberRoleId || setup.roles.gangMemberRole;
+            }
+            if (setup.categories.departmentsCategory) {
+                client.config.jobs.categoryId = client.config.jobs.categoryId || setup.categories.departmentsCategory;
+                client.config.gangs.categoryId = client.config.gangs.categoryId || setup.categories.departmentsCategory;
+            }
+            if (setup.channels.policeRole) {
+                client.config.jobs.policeChannelId = client.config.jobs.policeChannelId || setup.channels.policeRole;
+            }
+            if (setup.channels.emsRole) {
+                client.config.jobs.emsChannelId = client.config.jobs.emsChannelId || setup.channels.emsRole;
+            }
+            if (setup.channels.mechanicRole) {
+                client.config.jobs.mechanicChannelId = client.config.jobs.mechanicChannelId || setup.channels.mechanicRole;
+            }
+            if (setup.channels.realEstateRole) {
+                client.config.jobs.realEstateChannelId = client.config.jobs.realEstateChannelId || setup.channels.realEstateRole;
+            }
+            if (setup.channels.newsRole) {
+                client.config.jobs.newsChannelId = client.config.jobs.newsChannelId || setup.channels.newsRole;
             }
             if (setup.channels.bansChannel) {
                 client.config.bans.channelId = client.config.bans.channelId || setup.channels.bansChannel;
@@ -61,18 +107,17 @@ module.exports = {
             const staffRoleIds = client.config.tickets.staffRoleIds || [];
             const jobsStaffRoleIds = client.config.jobs.staffRoleIds || [];
             const appStaffRoleIds = client.config.applications.staffRoleIds || [];
-            if (setup.roles.staffRole && !staffRoleIds.includes(setup.roles.staffRole)) {
-                staffRoleIds.push(setup.roles.staffRole);
-                client.config.tickets.staffRoleIds = staffRoleIds;
+            for (const key of ['staffRole', 'modRole', 'adminRole', 'policeRole']) {
+                const rid = setup.roles[key];
+                if (rid) {
+                    if (!staffRoleIds.includes(rid)) staffRoleIds.push(rid);
+                    if (!jobsStaffRoleIds.includes(rid)) jobsStaffRoleIds.push(rid);
+                    if (!appStaffRoleIds.includes(rid)) appStaffRoleIds.push(rid);
+                }
             }
-            if (setup.roles.staffRole && !jobsStaffRoleIds.includes(setup.roles.staffRole)) {
-                jobsStaffRoleIds.push(setup.roles.staffRole);
-                client.config.jobs.staffRoleIds = jobsStaffRoleIds;
-            }
-            if (setup.roles.staffRole && !appStaffRoleIds.includes(setup.roles.staffRole)) {
-                appStaffRoleIds.push(setup.roles.staffRole);
-                client.config.applications.staffRoleIds = appStaffRoleIds;
-            }
+            client.config.tickets.staffRoleIds = staffRoleIds;
+            client.config.jobs.staffRoleIds = jobsStaffRoleIds;
+            client.config.applications.staffRoleIds = appStaffRoleIds;
         }
 
         // Register slash commands

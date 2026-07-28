@@ -19,8 +19,11 @@ function create(data) {
         id: all.length > 0 ? Math.max(...all.map(a => a.id)) + 1 : 1,
         userId: data.userId,
         username: data.username,
-        type: data.type,          // 'whitelist' or 'job'
+        type: data.type,          // 'whitelist', 'job', or 'gang'
         jobType: data.jobType || null,
+        gangName: data.gangName || null,
+        coLeaderIds: data.coLeaderIds || [],
+        memberIds: data.memberIds || [],
         answers: data.answers,    // array of { question, answer }
         status: STATUS.PENDING,
         reviewedBy: null,
